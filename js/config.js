@@ -52,8 +52,8 @@ window.UNDANGAN = {
   events: [
     {
       title: "Akad Nikah",
-      start: "2027-02-14T08:00:00+07:00",
-      end: "2027-02-14T10:00:00+07:00", // isi "" untuk menampilkan "Selesai"
+      start: "2026-12-19T08:00:00+07:00",
+      end: "2026-12-19T10:00:00+07:00", // isi "" untuk menampilkan "Selesai"
       venue: "Masjid Raya Al-Ikhlas",
       address: "Jl. Kenanga Raya No. 8, Kebayoran Baru, Jakarta Selatan",
       mapsUrl: "",   // link dari Google Maps (Bagikan → Salin link). Kosong = dicari dari nama & alamat
@@ -61,8 +61,8 @@ window.UNDANGAN = {
     },
     {
       title: "Resepsi",
-      start: "2027-02-14T11:00:00+07:00",
-      end: "2027-02-14T14:00:00+07:00",
+      start: "2026-12-19T11:00:00+07:00",
+      end: "2026-12-19T14:00:00+07:00",
       venue: "Gedung Serbaguna Pandawa",
       address: "Jl. Melati No. 21, Cilandak, Jakarta Selatan",
       mapsUrl: "",
@@ -98,7 +98,7 @@ window.UNDANGAN = {
       text: "Di hadapan kedua keluarga, Fazri menyampaikan niat baiknya. Hari itu kami sepakat untuk melangkah ke jenjang yang lebih serius."
     },
     {
-      year: "2027",
+      year: "2026",
       title: "Hari Bahagia",
       text: "Dengan restu orang tua dan doa dari orang-orang terkasih, kami memulai babak baru sebagai pasangan suami istri."
     }
