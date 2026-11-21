@@ -106,11 +106,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .ring { position: relative; display: grid; place-items: center; aspect-ratio: 1; margin: 0 auto; }
 .ring__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: spin 40s linear infinite; }
 .ring__text { font-family: var(--sans); font-weight: 500; letter-spacing: .1em; fill: var(--ink); }
+.ring__text .is-name { font-weight: 700; } /* nama mempelai di teks melingkar */
 .ring__names {
   position: relative; z-index: 1;
   display: grid; justify-items: center;
   margin: 0;
   font-family: var(--script); font-size: 46px; line-height: .95;
+  -webkit-text-stroke: .025em currentColor; /* lebih tebal, bentuk huruf tetap */
 }
 .ring__amp { margin: 2px 0; font-family: var(--serif); font-style: italic; font-size: 22px; }
 
@@ -357,7 +359,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .vname {
   margin: 6px 0 0;
   writing-mode: vertical-rl; text-orientation: upright;
-  font-size: 19px; font-weight: 400; line-height: 1; letter-spacing: .42em;
+  font-size: 19px; font-weight: 700; line-height: 1; letter-spacing: .42em;
 }
 .vname:last-child { align-self: flex-end; margin: 0 0 10px; }
 
@@ -473,7 +475,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .couple { display: grid; }
 .person { padding: 6px 0; }
 .person--reversed .oval { margin-top: 26px; }
-.person__name { margin: 18px 0 0; font-family: var(--script); font-weight: 400; font-size: 44px; line-height: 1.15; }
+.person__name { margin: 18px 0 0; font-family: var(--script); font-weight: 400; font-size: 44px; line-height: 1.15; -webkit-text-stroke: .025em currentColor; }
 .person--reversed .person__name { margin-top: 0; }
 .person__degree { margin: 2px 0 0; font-family: var(--serif); font-style: italic; font-size: 18px; }
 .dots { display: block; width: 0; height: 46px; margin: 12px auto; border-left: 1.5px dotted var(--ink); }
@@ -619,6 +621,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .g-word--we { left: 54%; top: 2%; }
 .g-word--married { left: 71%; top: 9.5%; }
+.g-word--n1, .g-word--n2 { font-weight: 700; }
 .g-word--n1 { left: 6%; top: 71%; }
 .g-word--amp { left: 21%; top: 77%; }
 .g-word--n2 { left: 30%; top: 83%; }
@@ -785,7 +788,7 @@ select.input {
 .closing__text { max-width: 33ch; margin: 0 auto 16px; }
 .closing__greeting { margin: 0 0 26px; font-weight: 700; }
 .closing__by { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; }
-.closing__names { margin: 4px 0 8px; font-family: var(--script); font-size: 52px; line-height: 1.2; }
+.closing__names { margin: 4px 0 8px; font-family: var(--script); font-size: 52px; line-height: 1.2; -webkit-text-stroke: .025em currentColor; }
 .closing__families { max-width: 32ch; margin: 0 auto; font-size: 13px; font-style: italic; color: var(--ink-2); }
 .scatter { margin: 40px 0 20px; font-size: 13px; font-weight: 600; }
 .scatter span { display: inline-block; margin: 0 .38em; transform: translateY(var(--y, 0)); }

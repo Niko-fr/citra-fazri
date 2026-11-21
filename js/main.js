@@ -37,7 +37,12 @@
     const circ = 2 * Math.PI * r;
     const size = Math.min(12.5, (circ * 0.92) / (text.length * 0.8));
     const tp = svg('textPath', { href: '#' + id, textLength: (circ * 0.995).toFixed(1), lengthAdjust: 'spacing' });
-    tp.textContent = text;
+    /* Nama mempelai di dalam teks dicetak tebal (tspan.is-name) */
+    const name = U.names.toUpperCase();
+    text.split(name).forEach((part, i) => {
+      if (i) { const b = svg('tspan', { class: 'is-name' }); b.textContent = name; tp.append(b); }
+      if (part) tp.append(document.createTextNode(part));
+    });
     return svg('svg', { class: 'ring__svg', viewBox: '0 0 300 300', 'aria-hidden': 'true' },
       svg('path', { id: id, d: 'M150,150 m-' + r + ',0 a' + r + ',' + r + ' 0 1,1 ' + 2 * r + ',0 a' + r + ',' + r + ' 0 1,1 -' + 2 * r + ',0', fill: 'none' }),
       svg('text', { class: 'ring__text', style: 'font-size:' + size.toFixed(2) + 'px' }, tp)
