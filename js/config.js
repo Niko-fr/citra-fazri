@@ -21,8 +21,8 @@ window.UNDANGAN = {
   brideFirst: true,
 
   groom: {
-    nickname: "Fazri",
-    fullName: "Fazri", // nama lengkap + gelar, mis. "Fazri Pratama, S.T."
+    nickname: "Alfazri",
+    fullName: "Alfazri", // nama lengkap + gelar, mis. "Alfazri Pratama, S.T."
     parents: "First son of Mr. Hendra Wijaya & Mrs. Sri Lestari",
     instagram: "", // tanpa @ — kosongkan bila tidak ingin ditampilkan
     photo: "assets/img/pria.jpg"
@@ -96,7 +96,7 @@ window.UNDANGAN = {
     {
       year: "2025",
       title: "The Proposal",
-      text: "In front of both our families, Fazri asked for Citra's hand. That day, we agreed to take the next step together."
+      text: "In front of both our families, Alfazri asked for Citra's hand. That day, we agreed to take the next step together."
     },
     {
       year: "2026",
@@ -134,7 +134,7 @@ window.UNDANGAN = {
   gift: {
     text: "Your prayers and blessings mean the world to us. However, if you wish to give a token of love, you may do so through:",
     accounts: [
-      { bank: "BCA", number: "1234567890", holder: "Fazri" },
+      { bank: "BCA", number: "1234567890", holder: "Alfazri" },
       { bank: "GoPay", number: "081200001111", holder: "Citra" }
     ],
     /* Hapus blok address (atau isi null) bila tidak menerima kiriman kado */
