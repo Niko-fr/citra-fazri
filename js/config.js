@@ -21,7 +21,7 @@ window.UNDANGAN = {
 
   groom: {
     nickname: "Fazri",
-    fullName: "Fazri", // nama lengkap + gelar, mis. "Anggi Pratama, S.T."
+    fullName: "Fazri", // nama lengkap + gelar, mis. "Fazri Pratama, S.T."
     parents: "Putra pertama dari Bapak Hendra Wijaya & Ibu Sri Lestari",
     instagram: "", // tanpa @ — kosongkan bila tidak ingin ditampilkan
     photo: "assets/img/pria.jpg"
