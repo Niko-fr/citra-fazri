@@ -652,6 +652,88 @@
     return el;
   }
 
+  /* ------------------------------------------------------------------ */
+  /* Ilustrasi penutup (gambar garis buatan sendiri): pasangan pengantin  */
+  /* naik motor di malam hari — bulan & bintang, kerudung berkibar,       */
+  /* kaleng terseret, asap knalpot berbentuk hati, buket melayang.        */
+  /* Motor datang dari kiri saat bagian ini muncul, lalu melaju di tempat. */
+  /* ------------------------------------------------------------------ */
+  function rideScene() {
+    const C_CREAM = '#F1EDE1'; /* garis krem di atas tinta (pipa knalpot, lengan gaun) */
+    const puff = delay => '<path class="ride-puff" style="animation-delay:-' + delay + 's" d="' + HEART + '"/>';
+    const wheel = (x, y) => '<g transform="translate(' + x + ' ' + y + ')"><g class="ride-wheel">' +
+      '<circle class="fill-bg" r="21" stroke-width="4"/><circle r="15.5" stroke-width="1"/>' +
+      '<path stroke-width="1" d="M-15.5 0H15.5M0-15.5V15.5M-11 -11L11 11M-11 11L11-11"/><circle class="dot" r="3.5"/></g></g>';
+    const can = (x, y, r, delay) => '<g transform="translate(' + x + ' ' + y + ') rotate(' + r + ')">' +
+      '<path class="ride-can fill-bg" style="animation-delay:-' + delay + 's" d="M-4-3.5h8v7h-8zM-4-1.5h8"/></g>';
+
+    return '<svg viewBox="0 0 320 190" aria-hidden="true" focusable="false">' +
+      /* langit malam */
+      '<g class="draw">' +
+        '<path class="fill-bg" pathLength="1" d="M276 8A24 24 0 1 0 299 45A20 20 0 1 1 276 8Z"/>' +
+      '</g>' +
+      '<g class="draw-late">' + spark(128, 24, 0) + spark(214, 18, 1.1) + spark(236, 58, .5) + spark(96, 46, 1.7) + spark(168, 40, 2.3) +
+        '<circle class="dot" cx="150" cy="58" r="1.2"/><circle class="dot" cx="196" cy="30" r="1.2"/><circle class="dot" cx="306" cy="76" r="1.2"/></g>' +
+      /* buket melayang dengan jejak titik-titik */
+      '<g class="draw-late"><path class="ride-trail" d="M176 96C150 84 132 100 114 92C104 86 108 76 116 78C122 80 118 90 108 90C96 90 80 74 64 66"/>' +
+        '<g transform="translate(54 58)"><g class="ride-bouquet">' +
+          '<path fill="#C9D8B6" d="M-9 3C-14-1-14-6-10-8C-7-5-7-1-9 3ZM19 3C24-1 24-6 20-8C17-5 17-1 19 3Z"/>' +
+          daisy(0, -1, 3.4) + daisy(10, -2, 3.4) + daisy(5, -9.5, 3.6) +
+          '<path class="fill-bg" d="M-3 4.5L5 16L13 4.5Z"/>' +
+          '<path fill="#A12C3E" d="M5 9C1 5-3 8 0 11C2 12.5 4 10.5 5 9ZM5 9C9 5 13 8 10 11C8 12.5 6 10.5 5 9Z"/>' +
+        '</g></g></g>' +
+      /* jalan: garis tanah & garis putus-putus yang bergerak */
+      '<g class="draw"><path pathLength="1" d="M8 176C80 175 240 177 312 176"/></g>' +
+      '<path class="ride-road" d="M0 184H320"/>' +
+      /* pasangan & motor: datang dari kiri, lalu berguncang pelan */
+      '<g class="ride-in"><g class="ride-bob">' +
+        /* garis kecepatan */
+        '<path class="ride-speed" d="M96 104H72M102 118H66M92 132H74"/>' +
+        /* kaleng terseret */
+        '<path stroke-width="1.2" d="M118 150C100 160 84 166 64 167M118 152C104 166 92 172 80 175M118 151C110 160 104 166 96 166"/>' +
+        can(62, 167, -14, 0) + can(78, 175, 10, .15) + can(95, 165, -6, .3) +
+        /* asap knalpot berbentuk hati */
+        '<g transform="translate(110 156)">' + puff(0) + puff(.5) + puff(1) + '</g>' +
+        /* kerudung berkibar (di belakang pengantin wanita) */
+        '<path class="ride-veil fill-bg" d="M181 64C160 58 132 60 104 66C94 68 84 66 74 62C82 74 98 80 116 80C138 80 160 76 179 74Z"/>' +
+        '<path class="ride-veil" stroke-width="1" d="M150 66C140 70 126 72 112 72M160 72C146 76 132 78 120 78"/>' +
+        /* roda belakang & badan motor */
+        wheel(140, 154) +
+        '<path d="M116 146C118 130 132 122 148 124C160 125 168 132 170 140"/>' +
+        '<path stroke-width="5" d="M182 157C164 161 142 162 118 159"/><path stroke="' + C_CREAM + '" stroke-width="2.4" d="M181 157C164 160 142 161 119 158"/>' +
+        '<path d="M160 128L140 154M186 132L176 146"/>' +
+        '<path class="dot" d="M176 147L186 131H214L223 147Z"/><path stroke="' + C_CREAM + '" stroke-width="1.4" d="M190 137H210M188 142H214"/>' +
+        '<path class="dot" d="M146 127C152 121 170 120 183 124V130H148Z"/>' +
+        '<path class="fill-bg" d="M181 123C185 113 210 111 222 117L224 127H183Z"/><path stroke-width="1.2" d="M190 117C198 115 208 115 214 117"/>' +
+        /* gaun pengantin wanita menjuntai ke belakang */
+        '<path class="fill-bg" d="M177 101C183 111 187 121 189 128C176 134 160 136 143 132C129 140 113 146 97 144C111 136 124 128 134 117C146 107 160 103 177 101Z"/>' +
+        '<path stroke-width="1" d="M170 112C160 118 150 124 140 128M178 118C166 124 152 130 136 136"/>' +
+        /* roda depan, sepatbor, garpu, lampu & sorotnya */
+        wheel(244, 154) +
+        '<path d="M226 142C228 132 238 127 248 128C258 129 264 136 266 144"/>' +
+        '<path stroke-width="3.2" d="M233 106L244 154"/>' +
+        '<path d="M224 98C229 95 234 97 236 101L243 96"/>' +
+        '<path class="ride-beam" d="M248 108L298 92M249 116L302 122M248 112L304 107"/>' +
+        '<circle class="fill-bg" cx="241" cy="112" r="6"/><circle class="dot" cx="241" cy="112" r="2.2"/>' +
+        /* pengantin pria (mengemudi) */
+        '<path stroke-width="8" d="M194 124L219 128L221 148"/><path stroke-width="4" d="M216 151H229"/>' +
+        '<path class="dot" d="M189 125C187 108 193 92 205 86L214 88C217 101 213 113 204 127Z"/>' +
+        '<path fill="' + C_CREAM + '" stroke="none" d="M205.5 86.5L211 87.5L208 95Z"/><path class="dot" d="M205 89l-3-2v4zM208 89l3-2v4z"/>' +
+        '<path stroke-width="6" d="M208 93C215 100 221 102 228 100"/><circle class="fill-bg" cx="229.5" cy="99.5" r="2.6"/>' +
+        '<circle class="fill-bg" cx="214" cy="76" r="9"/>' +
+        '<path class="dot" d="M205 75C204 64 222 61 224 72C219 68.5 211 69 205 75Z"/>' +
+        '<circle class="dot" cx="219" cy="77" r="1.1"/><path stroke-width="1.2" d="M216 81.5C218 82.5 220 82.3 221.5 81"/>' +
+        /* pengantin wanita: badan, tangan memeluk, kepala */
+        '<path class="fill-bg" d="M172 104C170 92 174 84 182 80L190 82C193 92 189 100 183 107Z"/>' +
+        '<path stroke-width="6.5" d="M184 91C192 97 198 99 205 98"/><path stroke="' + C_CREAM + '" stroke-width="3.8" d="M184.5 91.2C192 97 198 98.8 204.5 98"/>' +
+        '<circle class="fill-bg" cx="186" cy="70" r="8.5"/>' +
+        '<path class="dot" d="M177.5 71C175 60 191 55.5 195 66C190 63.5 184 63.5 177.5 71Z"/><circle class="dot" cx="179" cy="64" r="4.2"/>' +
+        '<circle class="dot" cx="191" cy="70.5" r="1.1"/><path stroke-width="1.2" d="M188 75.5C190 76.5 192 76.3 193.5 75"/>' +
+        '<circle fill="' + '#F6C6CC' + '" stroke="none" cx="189" cy="73.5" r="1.8"/>' +
+      '</g></g>' +
+      '</svg>';
+  }
+
   function renderOpening() {
     const o = C.opening || {};
     if (!o.greeting && !o.quote) { U.removeSection('pembuka'); return; }
@@ -1088,6 +1170,9 @@
       $(sel).textContent = text || '';
       $(sel).hidden = !text;
     });
+
+    const ride = $('#rideScene');
+    if (ride) ride.innerHTML = rideScene();
 
     /* Huruf "SEE YOU THERE" berserakan & bergelombang */
     const offsets = [0, 9, -5, 12, -2, 7, 0, 10, -6, 4, 11, -3];
