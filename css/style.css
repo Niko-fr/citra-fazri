@@ -780,11 +780,14 @@ select.input {
 /* ---------- Penutup ---------- */
 .closing { padding-bottom: 64px; }
 .closing__dear { margin: 0 0 10px; font-weight: 700; font-style: italic; }
-.thanks { position: relative; height: 140px; max-width: 310px; margin: 0 auto; }
-.thanks__word { position: absolute; font-family: var(--script); font-size: 54px; line-height: 1; }
-.thanks__word--a { top: 4px; left: 4px; }
-.thanks__word--b { right: 8px; bottom: 6px; }
-.thanks__dots { position: absolute; left: 36%; top: 45%; width: 46px; border-top: 2px dotted var(--ink); transform: rotate(14deg); }
+/* "Thank You": satu baris di tengah + pemisah titik-titik berhati di bawahnya */
+.thanks { position: relative; display: flex; justify-content: center; align-items: baseline; gap: .42em; margin: 14px auto 4px; padding: 0 0 26px; font-family: var(--script); font-size: clamp(40px, 11vw, 56px); line-height: 1.25; }
+.thanks__word { -webkit-text-stroke: .025em currentColor; }
+.thanks__dots { position: absolute; left: 50%; bottom: 8px; width: 132px; margin-left: -66px; border-top: 2px dotted var(--ink); opacity: .75; }
+.thanks__dots::after {
+  content: "\2665"; position: absolute; left: 50%; top: -9px; translate: -50% 0;
+  padding: 0 7px; background: var(--cream); font: 13px/1 var(--symbol); color: var(--ink);
+}
 .closing__text { max-width: 33ch; margin: 0 auto 16px; }
 .closing__greeting { margin: 0 0 26px; font-weight: 700; }
 .closing__by { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; }
@@ -932,8 +935,7 @@ body.is-opened .read-btn { opacity: 1; transform: none; pointer-events: auto; }
   .ring--cover { width: 340px; }
   .ring--cover .ring__names { font-size: 54px; }
   .oval { width: 250px; }
-  .thanks { max-width: 380px; height: 160px; }
-  .thanks__word { font-size: 64px; }
+  .thanks { font-size: 66px; }
   .closing__names { font-size: 62px; }
   .g-feature { padding: 12px 60px 0; }
   .g-instax { margin-left: 24px; margin-right: 24px; }
