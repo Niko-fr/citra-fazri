@@ -1412,7 +1412,6 @@
   const U = window.UndanganCore;
   if (!U) return;
   const { C, $, $$, h, setPhoto } = U;
-  const root = document.documentElement;
   const clamp = (v, max) => Math.max(-max, Math.min(max, v));
 
   /* ---------- Komidi putar foto 3D (sebelum tumpukan foto) ---------- */
@@ -1478,6 +1477,29 @@
     if (cover && inner) bind(cover, inner, 9);
   }
 
+  /* ---------- Penulis nilai miring (giroskop & scroll) ----------
+     Nilai hanya ditulis ke elemen yang memakainya DAN sedang terlihat — bukan ke <html> —
+     supaya browser tidak menghitung ulang gaya seluruh halaman di setiap frame
+     saat tamu scroll atau menggerakkan HP. Elemen yang baru masuk layar langsung
+     mendapat nilai terakhir, jadi tampilannya sama persis. */
+  function tiltWriter() {
+    const vars = {};
+    const visible = new Set();
+    const put = (el, name, value) => (value == null ? el.style.removeProperty(name) : el.style.setProperty(name, value));
+    const targets = $$('.gallery__btn .polaroid, .instax, .strip, .box, .scene, .cover__inner');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => entries.forEach(en => {
+        if (en.isIntersecting) { visible.add(en.target); Object.keys(vars).forEach(k => put(en.target, k, vars[k])); }
+        else visible.delete(en.target);
+      }), { rootMargin: '120px 0px' });
+      targets.forEach(el => io.observe(el));
+    } else {
+      targets.forEach(el => visible.add(el));
+    }
+    return (name, value) => { vars[name] = value; visible.forEach(el => put(el, name, value)); };
+  }
+  const setTilt = U.reduceMotion ? () => {} : tiltWriter();
+
   /* ---------- Miring mengikuti gerakan HP (giroskop) ---------- */
   function initGyro() {
     if (!('DeviceOrientationEvent' in window)) return;
@@ -1492,8 +1514,8 @@
       pending = true;
       requestAnimationFrame(() => {
         pending = false;
-        root.style.setProperty('--gx', gx.toFixed(1) + 'deg');
-        root.style.setProperty('--gy', gy.toFixed(1) + 'deg');
+        setTilt('--gx', gx.toFixed(1) + 'deg');
+        setTilt('--gy', gy.toFixed(1) + 'deg');
       });
     };
     const listen = () => window.addEventListener('deviceorientation', onMove);
@@ -1518,10 +1540,10 @@
       if (Math.abs(value) < 0.05 && Math.abs(target) < 0.05) {
         value = 0;
         running = false;
-        root.style.removeProperty('--sv');
+        setTilt('--sv', null);
         return;
       }
-      root.style.setProperty('--sv', value.toFixed(2) + 'deg');
+      setTilt('--sv', value.toFixed(2) + 'deg');
       requestAnimationFrame(step);
     };
     window.addEventListener('scroll', () => {
