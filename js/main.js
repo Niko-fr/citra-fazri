@@ -182,9 +182,11 @@
     };
   }
 
-  /* Pita meruncing di sepanjang kurva Bézier kubik (lebar w0 → w1), seperti goresan kuas */
-  function ribbon(p, w0, w1) {
-    const N = 56, A = [], B = [];
+  /* Pita meruncing di sepanjang kurva Bézier kubik (lebar w0 → w1), seperti goresan kuas.
+     topExtra(t): tambahan lebar di sisi atas — dipakai sebagai "lengkung pengisi" di titik
+     sambung, supaya garis melebur ke badan huruf (bukan menempel bersudut). */
+  function ribbon(p, w0, w1, topExtra) {
+    const N = 64, A = [], B = [];
     for (let i = 0; i <= N; i++) {
       const t = i / N, u = 1 - t;
       const x = u * u * u * p[0][0] + 3 * u * u * t * p[1][0] + 3 * u * t * t * p[2][0] + t * t * t * p[3][0];
@@ -193,8 +195,9 @@
       const dy = 3 * u * u * (p[1][1] - p[0][1]) + 6 * u * t * (p[2][1] - p[1][1]) + 3 * t * t * (p[3][1] - p[2][1]);
       const len = Math.hypot(dx, dy) || 1;
       const w = (w0 + (w1 - w0) * t * t * (3 - 2 * t)) / 2;
+      const wt = w + (topExtra ? topExtra(t) : 0);
       A.push(f(x - dy / len * w) + ' ' + f(y + dx / len * w));
-      B.push(f(x + dy / len * w) + ' ' + f(y - dx / len * w));
+      B.push(f(x + dy / len * wt) + ' ' + f(y - dx / len * wt));
     }
     return 'M' + A.join('L') + 'L' + B.reverse().join('L') + 'Z';
   }
@@ -209,7 +212,7 @@
       if (!best || r[1] > best.bot + 0.4) best = { x: x, top: r[0], bot: r[1] };
     }
     const thick = clampN(best.bot - best.top, 3, 10);
-    return { x: best.x + 2, y: best.bot - thick / 2, w: thick };
+    return { x: best.x + 4, y: best.bot - thick / 2, w: thick };
   }
 
   /* Garis kanan: ujung goresan huruf terakhir + arahnya (garis lurus dari 12 kolom terakhir).
@@ -230,15 +233,17 @@
       prev = (r[0] + r[1]) / 2;
       pts.push([x, prev, r[1] - r[0]]);
     }
-    const n = pts.length;
-    const mx = pts.reduce((s, p) => s + p[0], 0) / n, my = pts.reduce((s, p) => s + p[1], 0) / n;
+    /* Ujung goresan (kait kecil) dipotong mulai titik J; garis melanjutkan goresan dari sana
+       dengan arah & ketebalan goresan di sekitar J, jadi tidak ada sambungan yang terlihat. */
+    const near = pts.slice(Math.min(3, pts.length - 1), Math.min(pts.length, 12));
+    const n = near.length;
+    const mx = near.reduce((s, p) => s + p[0], 0) / n, my = near.reduce((s, p) => s + p[1], 0) / n;
     let num = 0, den = 0;
-    pts.forEach(p => { num += (p[0] - mx) * (p[1] - my); den += (p[0] - mx) * (p[0] - mx); });
-    const slope = clampN(den ? num / den : 0, -1.4, 0.6);
+    near.forEach(p => { num += (p[0] - mx) * (p[1] - my); den += (p[0] - mx) * (p[0] - mx); });
+    const slope = clampN(den ? num / den : 0, -1.6, 0.6);
     const cos = 1 / Math.hypot(1, slope);
-    const mid = pts[Math.min(n - 1, 6)];
-    const tip = pts[Math.min(n - 1, 2)];
-    return { x: tip[0], y: tip[1], w: clampN(mid[2] * cos, 3, 10), dx: cos, dy: slope * cos };
+    const at = pts[Math.min(pts.length - 1, 6)];
+    return { x: at[0], y: at[1], w: clampN(at[2] * cos * 1.15, 3, 11), dx: cos, dy: slope * cos };
   }
 
   /* SVG nama + garis lengkung (side: 'left' | 'right' | 'both') */
@@ -250,11 +255,13 @@
     const e = measureInk(word, weight + ' ' + NAME_PX + 'px ' + family, bold);
     const pt = (x, y) => f(x) + ' ' + f(y);
     const parts = [];
-    let reachL = 0, reachR = 0;
+    let reachL = 0, reachR = 0, cutAt = null;
     if (side === 'left' || side === 'both') {
       const J = leftJoin(e);
       const S = [J.x - TAIL, J.y - 3];
-      parts.push(['ribbon', ribbon([S, [J.x - TAIL * 0.62, J.y + TAIL * 0.05], [J.x - TAIL * 0.3, J.y], [J.x, J.y]], 2.4, J.w)]);
+      /* lengkung pengisi: sisi atas garis menebal halus di 25% terakhir, menyatu ke badan huruf */
+      const fillet = t => J.w * 1.7 * Math.pow(clampN((t - 0.72) / 0.28, 0, 1), 2.4);
+      parts.push(['ribbon', ribbon([S, [J.x - TAIL * 0.62, J.y + TAIL * 0.05], [J.x - TAIL * 0.3, J.y], [J.x, J.y]], 2.4, J.w, fillet)]);
       const end = [S[0] - 3.5, S[1] + 8.5];
       parts.push(['hook', 'M' + pt(S[0], S[1]) + 'C' + pt(S[0] - 6, S[1] + 0.5) + ' ' + pt(S[0] - 8.5, S[1] + 7) + ' ' + pt(end[0], end[1]), end]);
       reachL = e.boxLeft - (S[0] - 12);
@@ -262,7 +269,11 @@
     if (side === 'right' || side === 'both') {
       const J = rightJoin(e);
       const E = [J.x + TAIL, J.y + TAIL * 0.02];
-      parts.push(['ribbon', ribbon([[J.x, J.y], [J.x + J.dx * TAIL * 0.24, J.y + J.dy * TAIL * 0.24], [J.x + TAIL * 0.58, J.y + TAIL * 0.07], E], J.w, 2.4)]);
+      /* sisi atas di awal garis sedikit menebal: menutup ujung goresan huruf yang menyembul */
+      /* mulai 4 satuan di dalam goresan (sebelum titik potong) agar tertutup rapat */
+      const S = [J.x - J.dx * 4, J.y - J.dy * 4];
+      parts.push(['ribbon', ribbon([S, [J.x + J.dx * TAIL * 0.22, J.y + J.dy * TAIL * 0.22], [J.x + TAIL * 0.55, J.y + TAIL * 0.08], E], J.w, 2.4)]);
+      cutAt = J;
       const end = [E[0] + 3.5, E[1] - 8.5];
       parts.push(['hook', 'M' + pt(E[0], E[1]) + 'C' + pt(E[0] + 6, E[1] - 0.5) + ' ' + pt(E[0] + 8.5, E[1] - 7) + ' ' + pt(end[0], end[1]), end]);
       reachR = (E[0] + 12) - e.boxRight;
@@ -273,6 +284,18 @@
     const txt = svg('text', { x: 0, y: 0, 'font-family': family.replace(/["']/g, ''), 'font-weight': weight, 'font-size': NAME_PX,
       fill: 'currentColor', stroke: bold ? 'currentColor' : 'none', 'stroke-width': bold, 'stroke-linejoin': 'round' });
     txt.textContent = word;
+    if (cutAt !== null) {
+      /* Potong ujung goresan terakhir sepanjang garis tegak lurus arah goresan di titik J
+         (hanya di bawah tinggi huruf kecil, jadi titik "i" & bagian atas huruf tetap utuh) */
+      const id = 'nm-cut-' + (++uid);
+      const x0 = vb[0] - 50, y0 = vb[1] - 50, x1 = vb[0] + vb[2] + TAIL + 100, y1 = vb[1] + vb[3] + 50;
+      const top = -NAME_PX * 0.42;
+      const onCut = y => cutAt.x - cutAt.dy * ((y - cutAt.y) / cutAt.dx);   /* x pada garis potong di tinggi y */
+      el.append(svg('clipPath', { id: id },
+        svg('path', { 'clip-rule': 'evenodd', d: 'M' + f(x0) + ' ' + f(y0) + 'H' + f(x1) + 'V' + f(y1) + 'H' + f(x0) + 'Z' +
+          'M' + f(onCut(top)) + ' ' + f(top) + 'H' + f(x1) + 'V' + f(y1) + 'H' + f(onCut(y1)) + 'Z' })));
+      txt.setAttribute('clip-path', 'url(#' + id + ')');
+    }
     el.append(txt);
     parts.forEach(p => {
       if (p[0] === 'ribbon') el.append(svg('path', { d: p[1], fill: 'currentColor' }));
