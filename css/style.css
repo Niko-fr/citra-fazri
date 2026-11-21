@@ -17,7 +17,8 @@
   /* Tampilan foto sebelum "tercetak" (efek polaroid) */
   --photo-undeveloped: grayscale(1) brightness(2.3) contrast(.42);
   --serif: "Tinos", "Times New Roman", Times, serif;
-  --names: "Dancing Script", "Brush Script MT", cursive; /* nama mempelai di beranda */
+  --names: "Dancing Script", "Brush Script MT", cursive; /* model huruf nama mempelai di beranda */
+  --names-weight: 700;
   --script: "Monsieur La Doulaise", "Brush Script MT", cursive;
   --sans: "Inter", "Segoe UI", system-ui, sans-serif;
   --mono: ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
@@ -72,7 +73,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   --pad: .4em;    /* ruang agar ujung huruf tidak terpotong saat animasi */
   display: grid; justify-items: center;
   margin: 0;
-  font-family: var(--names); font-weight: 700;
+  font-family: var(--names); font-weight: var(--names-weight);
   font-size: clamp(50px, 15.5vw, 66px); line-height: 1.12;
   text-transform: lowercase;
 }

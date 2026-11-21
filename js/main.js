@@ -120,21 +120,30 @@
   /* ------------------------------------------------------------------ */
 
   /* ------------------------------------------------------------------ */
-  /* Nama di beranda: tiap nama digambar ulang sebagai SVG supaya garis   */
-  /* lengkung benar-benar menyambung ke goresan huruf pertama (kiri) dan  */
-  /* huruf terakhir (kanan). Titik sambung dicari dengan memindai piksel  */
-  /* huruf di kanvas, jadi tetap pas walau namanya diganti.               */
+  /* Nama di beranda: tiap nama digambar ulang sebagai SVG dengan garis   */
+  /* lengkung yang menyambung ke huruf, seperti tulisan kuas:            */
+  /*  - kiri : garis masuk MENDATAR ke titik terbawah huruf pertama       */
+  /*  - kanan: garis keluar MENGIKUTI ARAH goresan terakhir               */
+  /* Ketebalan di titik sambung = ketebalan goresan huruf (diukur dari    */
+  /* piksel huruf di kanvas), jadi tidak ada "benjolan" atau celah.       */
+  /* Model huruf diatur di css/style.css (--names, --names-weight).       */
   /* ------------------------------------------------------------------ */
-  const NAME_FONT = '"Dancing Script"';
   const NAME_PX = 100;     /* ukuran acuan; SVG diskalakan lewat em */
-  const NAME_BOLD = 2.2;   /* tebal garis tepi huruf agar lebih tegas */
+  const NAME_BOLD = 2;     /* tebal garis tepi huruf agar lebih tegas */
   const TAIL = 150;        /* panjang garis lengkung (100 = 1em) */
+  const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
 
-  /* Batas tinta paling kiri & kanan beserta tinggi goresannya (relatif garis dasar) */
-  function inkEdges(word) {
+  function nameStyle() {
+    const cs = getComputedStyle(document.documentElement);
+    const family = (cs.getPropertyValue('--names') || '"Dancing Script"').split(',')[0].trim();
+    const weight = (cs.getPropertyValue('--names-weight') || '700').trim() || '700';
+    return { family: family, weight: weight };
+  }
+
+  /* Peta tinta per kolom piksel: daftar potongan [atas, bawah] relatif garis dasar */
+  function measureInk(word, font, bold) {
     const cv = document.createElement('canvas');
     const ctx = cv.getContext('2d');
-    const font = '700 ' + NAME_PX + 'px ' + NAME_FONT;
     ctx.font = font;
     const m = ctx.measureText(word);
     const pad = 16;
@@ -145,25 +154,29 @@
     ctx.font = font;
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = ctx.strokeStyle = '#000';
-    ctx.lineWidth = NAME_BOLD;
+    ctx.lineWidth = bold;
     ctx.lineJoin = 'round';
     ctx.fillText(word, L, A);
-    ctx.strokeText(word, L, A);
+    if (bold) ctx.strokeText(word, L, A);
     const px = ctx.getImageData(0, 0, cv.width, cv.height).data;
-    const column = x => {
-      let top = -1, bot = -1;
-      for (let y = 0; y < cv.height; y++) {
-        if (px[(y * cv.width + x) * 4 + 3] > 140) { if (top < 0) top = y; bot = y; }
+    const cols = [];
+    for (let x = 0; x < cv.width; x++) {
+      const runs = [];
+      let start = -1;
+      for (let y = 0; y <= cv.height; y++) {
+        const on = y < cv.height && px[(y * cv.width + x) * 4 + 3] > 140;
+        if (on && start < 0) start = y;
+        if (!on && start >= 0) { runs.push([start - A, y - 1 - A]); start = -1; }
       }
-      return top < 0 ? null : { top: top - A, bot: bot - A };
-    };
+      cols.push(runs);
+    }
     let xl = 0;
-    while (xl < cv.width - 1 && !column(xl)) xl++;
+    while (xl < cv.width - 1 && !cols[xl].length) xl++;
     let xr = cv.width - 1;
-    while (xr > 0 && !column(xr)) xr--;
+    while (xr > 0 && !cols[xr].length) xr--;
     return {
-      left: xl - L, leftRun: column(Math.min(xl + 2, cv.width - 1)) || column(xl),
-      right: xr - L, rightRun: column(Math.max(xr - 2, 0)) || column(xr),
+      at: x => cols[Math.round(x) + L] || [],
+      xl: xl - L, xr: xr - L,
       asc: m.actualBoundingBoxAscent, desc: m.actualBoundingBoxDescent,
       boxLeft: -m.actualBoundingBoxLeft, boxRight: m.actualBoundingBoxRight
     };
@@ -171,7 +184,7 @@
 
   /* Pita meruncing di sepanjang kurva Bézier kubik (lebar w0 → w1), seperti goresan kuas */
   function ribbon(p, w0, w1) {
-    const N = 48, A = [], B = [];
+    const N = 56, A = [], B = [];
     for (let i = 0; i <= N; i++) {
       const t = i / N, u = 1 - t;
       const x = u * u * u * p[0][0] + 3 * u * u * t * p[1][0] + 3 * u * t * t * p[2][0] + t * t * t * p[3][0];
@@ -186,44 +199,99 @@
     return 'M' + A.join('L') + 'L' + B.reverse().join('L') + 'Z';
   }
 
-  /* Ganti isi span nama dengan SVG: huruf + garis lengkung di sisi kiri atau kanan */
-  function swashName(span, side) {
-    const word = span.textContent.trim().toLowerCase();
-    if (!word) return;
-    const e = inkEdges(word);
+  /* Garis kiri: titik terbawah huruf pertama, didekati mendatar dari kiri */
+  function leftJoin(e) {
+    let best = null;
+    for (let x = e.xl; x <= e.xl + NAME_PX * 0.42; x++) {
+      const runs = e.at(x);
+      if (!runs.length) continue;
+      const r = runs[runs.length - 1];
+      if (!best || r[1] > best.bot + 0.4) best = { x: x, top: r[0], bot: r[1] };
+    }
+    const thick = clampN(best.bot - best.top, 3, 10);
+    return { x: best.x + 2, y: best.bot - thick / 2, w: thick };
+  }
+
+  /* Garis kanan: ujung goresan huruf terakhir + arahnya (garis lurus dari 12 kolom terakhir).
+     Tinta yang seluruhnya di atas tinggi huruf kecil (titik "i", hiasan) diabaikan. */
+  function rightJoin(e) {
+    const low = runs => runs.filter(r => r[1] > -NAME_PX * 0.42);
+    let xr = e.xr;
+    while (xr > e.xl && !low(e.at(xr)).length) xr--;
+    const pts = [];
+    let prev = null;
+    for (let x = xr - 1; x >= xr - 14; x--) {
+      const runs = low(e.at(x));
+      if (!runs.length) continue;
+      let r = runs[runs.length - 1];
+      if (prev !== null) {
+        r = runs.reduce((a, b) => (Math.abs((a[0] + a[1]) / 2 - prev) <= Math.abs((b[0] + b[1]) / 2 - prev) ? a : b));
+      }
+      prev = (r[0] + r[1]) / 2;
+      pts.push([x, prev, r[1] - r[0]]);
+    }
+    const n = pts.length;
+    const mx = pts.reduce((s, p) => s + p[0], 0) / n, my = pts.reduce((s, p) => s + p[1], 0) / n;
+    let num = 0, den = 0;
+    pts.forEach(p => { num += (p[0] - mx) * (p[1] - my); den += (p[0] - mx) * (p[0] - mx); });
+    const slope = clampN(den ? num / den : 0, -1.4, 0.6);
+    const cos = 1 / Math.hypot(1, slope);
+    const mid = pts[Math.min(n - 1, 6)];
+    const tip = pts[Math.min(n - 1, 2)];
+    return { x: tip[0], y: tip[1], w: clampN(mid[2] * cos, 3, 10), dx: cos, dy: slope * cos };
+  }
+
+  /* SVG nama + garis lengkung (side: 'left' | 'right' | 'both') */
+  function swashSVG(word, side, opt) {
+    opt = opt || {};
+    const st = nameStyle();
+    const family = opt.family || st.family, weight = opt.weight || st.weight;
+    const bold = opt.bold != null ? opt.bold : NAME_BOLD;
+    const e = measureInk(word, weight + ' ' + NAME_PX + 'px ' + family, bold);
     const pt = (x, y) => f(x) + ' ' + f(y);
-    let tail, hook, end, reach;
-    if (side === 'left') {
-      const run = e.leftRun;
-      const J = [e.left + 4, run.top + (run.bot - run.top) * 0.6];      /* masuk ke goresan huruf pertama */
-      const S = [J[0] - TAIL, J[1] - 2];
-      tail = ribbon([S, [J[0] - TAIL * 0.5, J[1] + TAIL * 0.07], [J[0] - TAIL * 0.18, J[1] + TAIL * 0.05], J], 2.6, 7);
-      end = [S[0] - 3.5, S[1] + 8.5];
-      hook = 'M' + pt(S[0], S[1]) + 'C' + pt(S[0] - 6, S[1] + 0.5) + ' ' + pt(S[0] - 8.5, S[1] + 7) + ' ' + pt(end[0], end[1]);
-      reach = e.boxLeft - (S[0] - 12);
-    } else {
-      const run = e.rightRun;
-      const J = [e.right - 3, (run.top + run.bot) / 2];                  /* keluar dari ujung huruf terakhir */
-      const E = [J[0] + TAIL, J[1] + TAIL * 0.01];
-      tail = ribbon([J, [J[0] + TAIL * 0.18, J[1] - TAIL * 0.05], [J[0] + TAIL * 0.5, J[1] + TAIL * 0.07], E], 7, 2.6);
-      end = [E[0] + 3.5, E[1] - 8.5];
-      hook = 'M' + pt(E[0], E[1]) + 'C' + pt(E[0] + 6, E[1] - 0.5) + ' ' + pt(E[0] + 8.5, E[1] - 7) + ' ' + pt(end[0], end[1]);
-      reach = (E[0] + 12) - e.boxRight;
+    const parts = [];
+    let reachL = 0, reachR = 0;
+    if (side === 'left' || side === 'both') {
+      const J = leftJoin(e);
+      const S = [J.x - TAIL, J.y - 3];
+      parts.push(['ribbon', ribbon([S, [J.x - TAIL * 0.62, J.y + TAIL * 0.05], [J.x - TAIL * 0.3, J.y], [J.x, J.y]], 2.4, J.w)]);
+      const end = [S[0] - 3.5, S[1] + 8.5];
+      parts.push(['hook', 'M' + pt(S[0], S[1]) + 'C' + pt(S[0] - 6, S[1] + 0.5) + ' ' + pt(S[0] - 8.5, S[1] + 7) + ' ' + pt(end[0], end[1]), end]);
+      reachL = e.boxLeft - (S[0] - 12);
+    }
+    if (side === 'right' || side === 'both') {
+      const J = rightJoin(e);
+      const E = [J.x + TAIL, J.y + TAIL * 0.02];
+      parts.push(['ribbon', ribbon([[J.x, J.y], [J.x + J.dx * TAIL * 0.24, J.y + J.dy * TAIL * 0.24], [J.x + TAIL * 0.58, J.y + TAIL * 0.07], E], J.w, 2.4)]);
+      const end = [E[0] + 3.5, E[1] - 8.5];
+      parts.push(['hook', 'M' + pt(E[0], E[1]) + 'C' + pt(E[0] + 6, E[1] - 0.5) + ' ' + pt(E[0] + 8.5, E[1] - 7) + ' ' + pt(end[0], end[1]), end]);
+      reachR = (E[0] + 12) - e.boxRight;
     }
     const vb = [e.boxLeft, -e.asc - 6, e.boxRight - e.boxLeft, e.asc + e.desc + 12];
     const el = svg('svg', { class: 'nm', viewBox: vb.map(f).join(' '), 'aria-hidden': 'true',
       style: 'width:' + (vb[2] / NAME_PX).toFixed(3) + 'em;height:' + (vb[3] / NAME_PX).toFixed(3) + 'em' });
-    const txt = svg('text', { x: 0, y: 0, 'font-family': NAME_FONT.replace(/"/g, ''), 'font-weight': 700, 'font-size': NAME_PX,
-      fill: 'currentColor', stroke: 'currentColor', 'stroke-width': NAME_BOLD, 'stroke-linejoin': 'round' });
+    const txt = svg('text', { x: 0, y: 0, 'font-family': family.replace(/["']/g, ''), 'font-weight': weight, 'font-size': NAME_PX,
+      fill: 'currentColor', stroke: bold ? 'currentColor' : 'none', 'stroke-width': bold, 'stroke-linejoin': 'round' });
     txt.textContent = word;
-    el.append(txt,
-      svg('path', { d: tail, fill: 'currentColor' }),
-      svg('path', { d: hook, fill: 'none', stroke: 'currentColor', 'stroke-width': 2.6, 'stroke-linecap': 'round' }),
-      svg('circle', { cx: f(end[0]), cy: f(end[1]), r: 2.2, fill: 'currentColor' }));
+    el.append(txt);
+    parts.forEach(p => {
+      if (p[0] === 'ribbon') el.append(svg('path', { d: p[1], fill: 'currentColor' }));
+      else el.append(svg('path', { d: p[1], fill: 'none', stroke: 'currentColor', 'stroke-width': 2.4, 'stroke-linecap': 'round' }),
+        svg('circle', { cx: f(p[2][0]), cy: f(p[2][1]), r: 2, fill: 'currentColor' }));
+    });
+    return { el: el, reachLeft: reachL / NAME_PX, reachRight: reachR / NAME_PX };
+  }
+  window.UndanganSwash = { build: swashSVG };
+
+  /* Ganti isi span nama dengan SVG; beri ruang di sisi garis agar tidak terpotong animasi "ditulis" */
+  function swashName(span, side) {
+    const word = span.textContent.trim().toLowerCase();
+    if (!word) return;
+    const out = swashSVG(word, side);
     span.textContent = '';
-    span.append(h('span', { class: 'sr-only' }, word), el);
-    /* Garis menjorok ke luar kotak huruf: beri ruang agar tidak terpotong animasi "ditulis" */
-    const room = 'calc(var(--pad) + ' + (reach / NAME_PX).toFixed(3) + 'em)';
+    span.append(h('span', { class: 'sr-only' }, word), out.el);
+    const reach = side === 'left' ? out.reachLeft : out.reachRight;
+    const room = 'calc(var(--pad) + ' + reach.toFixed(3) + 'em)';
     if (side === 'left') { span.style.paddingLeft = room; span.style.marginLeft = 'calc(' + room + ' * -1)'; }
     else { span.style.paddingRight = room; span.style.marginRight = 'calc(' + room + ' * -1)'; }
   }
@@ -232,8 +300,9 @@
     const box = $('.big-caps');
     if (!box) return;
     const a = $('[data-name1]', box), b = $('[data-name2]', box);
+    const st = nameStyle();
     const go = () => { swashName(a, 'left'); swashName(b, 'right'); box.classList.add('has-swash'); };
-    if (document.fonts && document.fonts.load) document.fonts.load('700 100px ' + NAME_FONT, a.textContent + b.textContent).then(go, go);
+    if (document.fonts && document.fonts.load) document.fonts.load(st.weight + ' 100px ' + st.family, a.textContent + b.textContent).then(go, go);
     else go();
   }
 
