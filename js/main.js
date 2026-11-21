@@ -123,15 +123,15 @@
     U.bindText();
     const ringText = (['The Wedding of', U.names, 'Save the Date', shortDate()].filter(Boolean).join(' · ') + ' · ').toUpperCase();
     $('#coverRing').prepend(ringSvg(ringText));
-    $('#heroArc').append(arcSvg('dua hati, satu cerita', 'selamanya bersama'));
-    $('#closingArc').append(arcSvg('telah menjadi bagian dari kisah kami'));
+    $('#heroArc').append(arcSvg('two hearts, one story', 'together, always'));
+    $('#closingArc').append(arcSvg('you are part of our story'));
     twinkles($('#coverCard'), 8);
     twinkles($('#penutup'), 6);
 
     const photos = C.photos || {};
     const second = (C.gallery || [])[0];
-    const a = polaroid(photos.hero, 'Foto Utama', '', -4);
-    const b = polaroid(second, 'Foto Kedua', '', 3.5);
+    const a = polaroid(photos.hero, 'Main Photo', '', -4);
+    const b = polaroid(second, 'Second Photo', '', 3.5);
     a.el.classList.add('reveal', 'reveal--left');
     b.el.classList.add('reveal', 'reveal--right');
     b.el.style.setProperty('--d', '.12s');
@@ -525,12 +525,12 @@
         h('p', { class: 'address reveal' }, first.address),
         mapEvent ? h('iframe', {
           class: 'event-map reveal',
-          title: 'Peta lokasi ' + first.venue,
+          title: 'Map of ' + first.venue,
           loading: 'lazy',
           referrerpolicy: 'no-referrer-when-downgrade',
           src: U.mapEmbedUrl(first)
         }) : null,
-        h('a', { class: 'btn-ink reveal reveal--zoom', href: U.mapsLink(mapEvent || first), target: '_blank', rel: 'noopener' }, icon('pin'), 'Lihat Lokasi')
+        h('a', { class: 'btn-ink reveal reveal--zoom', href: U.mapsLink(mapEvent || first), target: '_blank', rel: 'noopener' }, icon('pin'), 'View Location')
       ));
     });
   }
@@ -654,17 +654,17 @@
     const zoom = (i, cls, child, extra) => h('button', Object.assign({
       type: 'button',
       class: cls,
-      'aria-label': 'Perbesar foto ' + (i + 1),
+      'aria-label': 'View photo ' + (i + 1),
       onclick: () => lightbox.open(i)
     }, extra || {}), child);
     const photo = i => {
-      const img = h('img', { alt: 'Foto ' + (i + 1), loading: 'lazy', decoding: 'async' });
-      setPhoto(img, list[i], 'Galeri ' + (i + 1));
+      const img = h('img', { alt: 'Photo ' + (i + 1), loading: 'lazy', decoding: 'async' });
+      setPhoto(img, list[i], 'Gallery ' + (i + 1));
       images[i] = img;
       return img;
     };
     const framed = (i, rot, cls) => {
-      const p = polaroid(list[i], 'Galeri ' + (i + 1), '', rot);
+      const p = polaroid(list[i], 'Gallery ' + (i + 1), '', rot);
       images[i] = p.img;
       return zoom(i, 'gallery__btn ' + (cls || ''), p.el);
     };
@@ -763,7 +763,7 @@
     const photos = sources.map((src, i) => {
       const p = STACK_LAYOUT[i];
       const img = h('img', { alt: '', loading: 'lazy', decoding: 'async' });
-      setPhoto(img, src, 'Galeri ' + (i + 1));
+      setPhoto(img, src, 'Gallery ' + (i + 1));
       return h('figure', {
         class: 'stack-photo stack-photo--' + p.kind,
         style: '--x:' + p.x + ';--y:' + p.y + ';--w:' + p.w + ';--r:' + p.r + 'deg'
@@ -836,11 +836,11 @@
         h('button', {
           type: 'button',
           class: 'copy-num',
-          'aria-label': 'Salin nomor ' + a.bank + ' ' + a.number,
-          onclick: () => U.copyWithToast(digits, 'Nomor ' + a.bank + ' disalin')
+          'aria-label': 'Copy ' + a.bank + ' number ' + a.number,
+          onclick: () => U.copyWithToast(digits, a.bank + ' number copied')
         }, '[' + a.number + ']', icon('copy')),
-        h('p', { class: 'copy-hint' }, 'ketuk nomor untuk menyalin'),
-        h('p', { class: 'gift__holder' }, 'A.N : ' + a.holder)
+        h('p', { class: 'copy-hint' }, 'tap the number to copy'),
+        h('p', { class: 'gift__holder' }, 'Account name: ' + a.holder)
       ));
     });
 
@@ -848,10 +848,10 @@
     if (ad) {
       const full = [ad.recipient, ad.phone].filter(Boolean).join(' · ') + '\n' + ad.text;
       list.append(h('div', { class: 'gift' },
-        h('p', { class: 'gift__bank' }, 'Kirim Kado'),
+        h('p', { class: 'gift__bank' }, 'Send a Gift'),
         h('p', { class: 'gift__address' },
           h('strong', null, ad.recipient), ad.phone ? ' · ' + ad.phone : '', h('br'), ad.text),
-        h('button', { type: 'button', class: 'link-ink', onclick: () => U.copyWithToast(full, 'Alamat disalin') }, icon('copy'), 'Salin alamat')
+        h('button', { type: 'button', class: 'link-ink', onclick: () => U.copyWithToast(full, 'Address copied') }, icon('copy'), 'Copy address')
       ));
     }
   }
@@ -863,11 +863,11 @@
       $(sel).hidden = !text;
     });
 
-    /* Huruf "SAMPAI JUMPA" berserakan & bergelombang */
+    /* Huruf "SEE YOU THERE" berserakan & bergelombang */
     const offsets = [0, 9, -5, 12, -2, 7, 0, 10, -6, 4, 11, -3];
     const box = $('#scatter');
-    box.append(h('span', { class: 'sr-only' }, 'Sampai jumpa'));
-    Array.from('SAMPAI JUMPA').forEach((ch, i) => {
+    box.append(h('span', { class: 'sr-only' }, 'See you there'));
+    Array.from('SEE YOU THERE').forEach((ch, i) => {
       box.append(ch === ' '
         ? h('span', { class: 'gap', 'aria-hidden': 'true' })
         : h('span', { 'aria-hidden': 'true', style: '--y:' + offsets[i % offsets.length] + 'px;--i:' + i }, ch));
@@ -881,7 +881,7 @@
   function wishItem(w, att) {
     return h('li', { class: 'wish' },
       h('p', { class: 'wish__head' },
-        h('span', { class: 'wish__name' }, String(w.name || 'Tamu')),
+        h('span', { class: 'wish__name' }, String(w.name || 'Guest')),
         att ? h('span', { class: 'badge badge--' + att.kind }, att.label) : null
       ),
       h('p', { class: 'wish__msg' }, String(w.message || '')),
@@ -894,10 +894,10 @@
     box.textContent = '';
     if (!total) return;
     box.append(
-      h('b', null, String(total)), ' ucapan · ',
-      h('b', null, String(count.yes)), ' hadir · ',
-      h('b', null, String(count.no)), ' tidak hadir · ',
-      h('b', null, String(count.maybe)), ' ragu'
+      h('b', null, String(total)), total === 1 ? ' wish · ' : ' wishes · ',
+      h('b', null, String(count.yes)), ' attending · ',
+      h('b', null, String(count.no)), ' not attending · ',
+      h('b', null, String(count.maybe)), ' not sure'
     );
   }
 
@@ -955,8 +955,8 @@
       document.documentElement.style.scrollBehavior = 'auto';
       btn.classList.add('is-active');
       btn.setAttribute('aria-pressed', 'true');
-      btn.setAttribute('aria-label', 'Hentikan mode baca');
-      U.toast('Mode baca aktif — sentuh layar untuk berhenti');
+      btn.setAttribute('aria-label', 'Stop reading mode');
+      U.toast('Reading mode on — touch the screen to stop');
       raf = requestAnimationFrame(step);
     }
     function stop() {
@@ -966,7 +966,7 @@
       document.documentElement.style.scrollBehavior = '';
       btn.classList.remove('is-active');
       btn.setAttribute('aria-pressed', 'false');
-      btn.setAttribute('aria-label', 'Mode baca: gulir otomatis');
+      btn.setAttribute('aria-label', 'Reading mode: auto-scroll');
     }
 
     btn.addEventListener('click', () => (active ? stop() : start()));
@@ -1084,7 +1084,7 @@
     const orbit = h('div', { class: 'orbit', style: '--n:' + n });
     list.forEach((src, i) => {
       const img = h('img', { alt: '', loading: 'lazy', decoding: 'async' });
-      setPhoto(img, src, 'Galeri ' + (i + 1));
+      setPhoto(img, src, 'Gallery ' + (i + 1));
       orbit.append(h('figure', { class: 'orbit__item', style: '--i:' + i }, img));
     });
     orbit.append(h('span', { class: 'orbit__floor' }));

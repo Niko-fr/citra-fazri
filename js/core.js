@@ -110,8 +110,11 @@
   /* Tanggal                                                             */
   /* ------------------------------------------------------------------ */
 
+  /* Bahasa tanggal & jam di undangan (en-GB: "Saturday, 19 December 2026", "08:00") */
+  const LOCALE = 'en-GB';
+
   function fmt(iso, opts) {
-    return new Intl.DateTimeFormat('id-ID', Object.assign({ timeZone: TZ }, opts)).format(new Date(iso));
+    return new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: TZ }, opts)).format(new Date(iso));
   }
   const longDate = iso => fmt(iso, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const timeOf = iso => fmt(iso, { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -120,7 +123,7 @@
   function dateParts(iso) {
     const d = new Date(iso);
     const part = (opts, type) => {
-      const parts = new Intl.DateTimeFormat('id-ID', Object.assign({ timeZone: TZ }, opts)).formatToParts(d);
+      const parts = new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: TZ }, opts)).formatToParts(d);
       return (parts.find(p => p.type === type) || {}).value || '';
     };
     return {
@@ -139,7 +142,7 @@
     return p.day + s + p.monthNum + s + p.year;
   }
 
-  const rtf = new Intl.RelativeTimeFormat('id', { numeric: 'auto' });
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
   function timeAgo(iso) {
     const t = new Date(iso).getTime();
     if (isNaN(t)) return '';
@@ -148,7 +151,7 @@
     for (const [unit, size] of units) {
       if (Math.abs(sec) >= size) return rtf.format(Math.round(sec / size), unit);
     }
-    return 'baru saja';
+    return 'just now';
   }
 
   /* ------------------------------------------------------------------ */
@@ -160,12 +163,12 @@
   const initials = people.map(p => p.nickname.charAt(0)).join('&');
   const events = C.events || [];
   const mainEvent = events[0];
-  const roleLabel = p => (p === C.groom ? 'Mempelai Pria' : 'Mempelai Wanita');
+  const roleLabel = p => (p === C.groom ? 'The Groom' : 'The Bride');
 
   function timeRange(ev) {
     return ev.end
       ? timeOf(ev.start) + ' – ' + timeOf(ev.end) + ' ' + TZ_LABEL
-      : timeOf(ev.start) + ' ' + TZ_LABEL + ' – Selesai';
+      : timeOf(ev.start) + ' ' + TZ_LABEL + ' onwards';
   }
   const placeQuery = ev => [ev.venue, ev.address].filter(Boolean).join(', ');
   const mapsLink = ev => ev.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(placeQuery(ev));
@@ -178,7 +181,7 @@
     const stamp = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     const details = events.map(ev => ev.title + ': ' + timeOf(ev.start) + ' ' + TZ_LABEL + ' — ' + ev.venue).join('\n');
     return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-      '&text=' + encodeURIComponent('Pernikahan ' + names) +
+      '&text=' + encodeURIComponent('Wedding of ' + names) +
       '&dates=' + stamp(new Date(mainEvent.start)) + '/' + stamp(end) +
       '&details=' + encodeURIComponent(details) +
       '&location=' + encodeURIComponent(placeQuery(last));
@@ -238,7 +241,7 @@
 
   async function copyWithToast(text, done) {
     const ok = await copyText(text);
-    toast(ok ? done : 'Gagal menyalin, silakan salin manual');
+    toast(ok ? done : 'Copy failed, please copy it manually');
   }
 
   /* ------------------------------------------------------------------ */
@@ -249,10 +252,12 @@
   const endpoint = (RSVP.endpoint || '').trim();
   const PAGE = RSVP.pageSize || 8;
   const STORE_KEY = 'undangan-ucapan';
+  /* Nilai yang disimpan tetap "Hadir/Tidak Hadir/Ragu" (cocok dengan Code.gs & data lama);
+     yang tampil ke tamu memakai label bahasa Inggris. */
   const ATTENDANCE = {
-    'Hadir': { kind: 'yes', label: 'Hadir' },
-    'Tidak Hadir': { kind: 'no', label: 'Tidak Hadir' },
-    'Ragu': { kind: 'maybe', label: 'Masih Ragu' }
+    'Hadir': { kind: 'yes', label: 'Attending' },
+    'Tidak Hadir': { kind: 'no', label: 'Not Attending' },
+    'Ragu': { kind: 'maybe', label: 'Not Sure' }
   };
 
   const localStore = {
@@ -318,7 +323,7 @@
       const list = $('#wishList');
       list.textContent = '';
       if (!wishes.length) {
-        list.append(h('li', { class: 'wishes__empty' }, 'Belum ada ucapan. Jadilah yang pertama mengirim doa untuk kami.'));
+        list.append(h('li', { class: 'wishes__empty' }, 'No wishes yet. Be the first to send us your wishes.'));
       }
       wishes.slice(0, shown).forEach(w => list.append(view.item(w, ATTENDANCE[w.attendance] || null)));
       $('#moreWishes').hidden = shown >= wishes.length;
@@ -343,24 +348,24 @@
         guests: 0,
         message: msgInput.value.trim()
       };
-      if (!entry.name) { showError('Nama belum diisi.'); nameInput.focus(); return; }
-      if (!entry.attendance) { showError('Pilih status kehadiran.'); return; }
-      if (!entry.message) { showError('Ucapan belum diisi.'); msgInput.focus(); return; }
+      if (!entry.name) { showError('Please enter your name.'); nameInput.focus(); return; }
+      if (!entry.attendance) { showError('Please choose your attendance.'); return; }
+      if (!entry.message) { showError('Please write your wishes.'); msgInput.focus(); return; }
       if (entry.attendance === 'Hadir') entry.guests = Number($('#rsvpGuests').value) || 1;
       showError('');
 
       submit.disabled = true;
-      submitLabel.textContent = 'Mengirim…';
+      submitLabel.textContent = 'Sending…';
       try {
         const saved = await sendWish(entry);
         wishes.unshift(saved || Object.assign({ timestamp: new Date().toISOString() }, entry));
         render();
         msgInput.value = '';
         $('#msgCount').textContent = '0';
-        toast('Terima kasih atas ucapan dan doanya!');
+        toast('Thank you for your wishes and prayers!');
       } catch (err) {
         console.error('[undangan]', err);
-        showError('Maaf, ucapan gagal terkirim. Periksa koneksi internet lalu coba lagi.');
+        showError('Sorry, your wishes could not be sent. Please check your connection and try again.');
       } finally {
         submit.disabled = false;
         submitLabel.textContent = idleLabel;
@@ -378,7 +383,7 @@
         console.error('[undangan]', err);
         const list = $('#wishList');
         list.textContent = '';
-        list.append(h('li', { class: 'wishes__empty' }, 'Ucapan belum dapat dimuat. Coba muat ulang halaman.'));
+        list.append(h('li', { class: 'wishes__empty' }, 'Wishes could not be loaded. Please reload the page.'));
       });
   }
 
@@ -396,7 +401,7 @@
     const setState = playing => {
       btn.classList.toggle('is-playing', playing);
       btn.setAttribute('aria-pressed', String(playing));
-      btn.setAttribute('aria-label', playing ? 'Jeda musik' : 'Putar musik');
+      btn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
     };
     audio.src = asset(src);
 
@@ -561,7 +566,7 @@
     }
 
     img.addEventListener('error', () => {
-      if (img.src.indexOf('data:') !== 0) img.src = placeholder('Galeri ' + (index + 1));
+      if (img.src.indexOf('data:') !== 0) img.src = placeholder('Gallery ' + (index + 1));
     });
     first.addEventListener('click', close);
     $('#lbPrev').addEventListener('click', () => show(index - 1));
@@ -638,7 +643,7 @@
     const cover = $('#cover');
     const locked = $$('[data-locked]');
     locked.forEach(el => { el.inert = true; });
-    $('#guestName').textContent = guestFromUrl() || C.defaultGuest || 'Tamu Undangan';
+    $('#guestName').textContent = guestFromUrl() || C.defaultGuest || 'Our Honoured Guest';
     scrollToTopNow();
 
     $('#openBtn').addEventListener('click', () => {

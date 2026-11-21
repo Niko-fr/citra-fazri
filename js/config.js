@@ -1,6 +1,7 @@
 /* ==========================================================================
    KONFIGURASI UNDANGAN
    Semua isi undangan diatur dari file ini — tidak perlu mengubah HTML/JS lain.
+   Teks undangan memakai bahasa Inggris (komentar petunjuk tetap bahasa Indonesia).
 
    - Teks      : ganti langsung di antara tanda kutip "...".
    - Tanggal   : format "TAHUN-BULAN-TANGGALTJAM:MENIT:00+07:00"
@@ -13,8 +14,8 @@ window.UNDANGAN = {
   timeZone: "Asia/Jakarta", // "Asia/Makassar" untuk WITA, "Asia/Jayapura" untuk WIT
   timeZoneLabel: "WIB",
 
-  /* Sapaan bila link dibuka tanpa ?to=Nama */
-  defaultGuest: "Bapak/Ibu/Saudara/i",
+  /* Sapaan di sampul bila link dibuka tanpa ?to=Nama */
+  defaultGuest: "Our Honoured Guest",
 
   /* true = nama mempelai wanita ditulis lebih dulu */
   brideFirst: true,
@@ -22,7 +23,7 @@ window.UNDANGAN = {
   groom: {
     nickname: "Fazri",
     fullName: "Fazri", // nama lengkap + gelar, mis. "Fazri Pratama, S.T."
-    parents: "Putra pertama dari Bapak Hendra Wijaya & Ibu Sri Lestari",
+    parents: "First son of Mr. Hendra Wijaya & Mrs. Sri Lestari",
     instagram: "", // tanpa @ — kosongkan bila tidak ingin ditampilkan
     photo: "assets/img/pria.jpg"
   },
@@ -30,7 +31,7 @@ window.UNDANGAN = {
   bride: {
     nickname: "Citra",
     fullName: "Citra", // nama lengkap + gelar, mis. "Citra Lestari, S.Psi."
-    parents: "Putri kedua dari Bapak Ahmad Fauzi & Ibu Ratna Dewi",
+    parents: "Second daughter of Mr. Ahmad Fauzi & Mrs. Ratna Dewi",
     instagram: "",
     photo: "assets/img/wanita.jpg"
   },
@@ -43,24 +44,24 @@ window.UNDANGAN = {
   /* Salam & kutipan pembuka — ganti sesuai keyakinan/selera (boleh dikosongkan) */
   opening: {
     greeting: "Assalamu'alaikum Warahmatullahi Wabarakatuh",
-    text: "Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan pernikahan putra-putri kami:",
-    quote: "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
-    quoteSource: "QS. Ar-Rum: 21"
+    text: "By the grace and blessing of Allah SWT, we joyfully announce the marriage of our beloved children:",
+    quote: "And of His signs is that He created for you from yourselves mates that you may find tranquillity in them; and He placed between you affection and mercy. Indeed in that are signs for a people who give thought.",
+    quoteSource: "Surah Ar-Rum: 21"
   },
 
   /* Acara pertama dipakai untuk hitung mundur */
   events: [
     {
-      title: "Akad Nikah",
+      title: "Marriage Ceremony",
       start: "2026-12-19T08:00:00+07:00",
-      end: "2026-12-19T10:00:00+07:00", // isi "" untuk menampilkan "Selesai"
+      end: "2026-12-19T10:00:00+07:00", // isi "" untuk menampilkan "... onwards"
       venue: "Masjid Raya Al-Ikhlas",
       address: "Jl. Kenanga Raya No. 8, Kebayoran Baru, Jakarta Selatan",
       mapsUrl: "",   // link dari Google Maps (Bagikan → Salin link). Kosong = dicari dari nama & alamat
       showMap: false // true = tampilkan peta di dalam kartu
     },
     {
-      title: "Resepsi",
+      title: "Wedding Reception",
       start: "2026-12-19T11:00:00+07:00",
       end: "2026-12-19T14:00:00+07:00",
       venue: "Gedung Serbaguna Pandawa",
@@ -72,35 +73,35 @@ window.UNDANGAN = {
 
   /* Kosongkan colors: [] untuk menyembunyikan bagian Dress Code */
   dressCode: {
-    note: "Kami akan senang bila Anda berkenan mengenakan warna-warna berikut di hari bahagia kami.",
+    note: "We would be delighted if you could wear the following colours on our special day.",
     colors: [
-      { name: "Krem", hex: "#EFE4CC" },
-      { name: "Merah Maroon", hex: "#7A1F2B" },
-      { name: "Hitam", hex: "#1C1C1C" }
+      { name: "Cream", hex: "#EFE4CC" },
+      { name: "Maroon", hex: "#7A1F2B" },
+      { name: "Black", hex: "#1C1C1C" }
     ]
   },
 
-  /* Kosongkan story: [] untuk menyembunyikan bagian Kisah Kami */
+  /* Kosongkan story: [] untuk menyembunyikan bagian Our Journey */
   story: [
     {
       year: "2019",
-      title: "Awal Bertemu",
-      text: "Kami pertama kali bertemu di sebuah kelas fotografi akhir pekan di Bandung. Obrolan singkat soal lensa berlanjut menjadi kopi sore yang tak terasa berjam-jam."
+      title: "How We Met",
+      text: "We first met at a weekend photography class in Bandung. A short chat about camera lenses turned into an afternoon coffee that lasted for hours."
     },
     {
       year: "2021",
-      title: "Menjalin Kisah",
-      text: "Jarak Jakarta–Surabaya tidak membuat kami menyerah. Panggilan video setiap malam dan perjalanan kereta di akhir bulan mengajarkan kami arti sabar dan percaya."
+      title: "Growing Together",
+      text: "The distance between Jakarta and Surabaya never made us give up. Video calls every night and train rides at the end of each month taught us patience and trust."
     },
     {
       year: "2025",
-      title: "Lamaran",
-      text: "Di hadapan kedua keluarga, Fazri menyampaikan niat baiknya. Hari itu kami sepakat untuk melangkah ke jenjang yang lebih serius."
+      title: "The Proposal",
+      text: "In front of both our families, Fazri asked for Citra's hand. That day, we agreed to take the next step together."
     },
     {
       year: "2026",
-      title: "Hari Bahagia",
-      text: "Dengan restu orang tua dan doa dari orang-orang terkasih, kami memulai babak baru sebagai pasangan suami istri."
+      title: "Our Wedding Day",
+      text: "With our parents' blessing and the prayers of our loved ones, we begin a new chapter as husband and wife."
     }
   ],
 
@@ -121,7 +122,7 @@ window.UNDANGAN = {
   photoStack: [],
 
   /* Kutipan di samping strip foto. Kosongkan "" bila tidak dipakai. */
-  galleryQuote: "Hari-hari biasa terasa lebih hangat sejak ada kamu.",
+  galleryQuote: "Ordinary days have felt warmer ever since you came along.",
 
   rsvp: {
     /* URL Web App Google Apps Script (lihat README di folder undangan-catatan).
@@ -131,7 +132,7 @@ window.UNDANGAN = {
   },
 
   gift: {
-    text: "Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun, jika Anda ingin memberikan tanda kasih, dapat melalui:",
+    text: "Your prayers and blessings mean the world to us. However, if you wish to give a token of love, you may do so through:",
     accounts: [
       { bank: "BCA", number: "1234567890", holder: "Fazri" },
       { bank: "GoPay", number: "081200001111", holder: "Citra" }
@@ -145,12 +146,12 @@ window.UNDANGAN = {
   },
 
   closing: {
-    text: "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu. Atas kehadiran dan doanya, kami ucapkan terima kasih.",
+    text: "It would be an honour and a joy for us if you could attend and give us your blessings. Thank you for your presence and your prayers.",
     greeting: "Wassalamu'alaikum Warahmatullahi Wabarakatuh",
-    families: "Keluarga Besar Bapak Hendra Wijaya & Keluarga Besar Bapak Ahmad Fauzi"
+    families: "The families of Mr. Hendra Wijaya & Mr. Ahmad Fauzi"
   },
 
-  /* Musik latar — mulai saat tamu menekan "Buka Undangan".
+  /* Musik latar — mulai saat tamu menekan "Open Invitation".
      Taruh file MP3 di assets/music. Pastikan Anda berhak memakai lagunya.
      Kosongkan src: "" untuk undangan tanpa musik. */
   music: {

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -9,13 +9,13 @@
        og:image WAJIB alamat lengkap. Saat pindah ke domain sendiri, ganti menjadi
        https://citrafazri.net/assets/img/preview.jpg -->
   <title>The Wedding of Citra &amp; Fazri</title>
-  <meta name="description" content="Sabtu, 19 Desember 2026 · Dengan penuh sukacita, kami mengundang Anda untuk hadir di hari pernikahan kami.">
+  <meta name="description" content="Saturday, 19 December 2026 · With joyful hearts, we invite you to celebrate our wedding.">
   <meta name="theme-color" content="#F1EDE1">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Citra &amp; Fazri">
   <meta property="og:title" content="The Wedding of Citra &amp; Fazri">
-  <meta property="og:description" content="Sabtu, 19 Desember 2026 · Dengan penuh sukacita, kami mengundang Anda untuk hadir di hari pernikahan kami.">
-  <meta property="og:image" content="https://niko-fr.github.io/citra-fazri/assets/img/preview.jpg">
+  <meta property="og:description" content="Saturday, 19 December 2026 · With joyful hearts, we invite you to celebrate our wedding.">
+  <meta property="og:image" content="https://niko-fr.github.io/citra-fazri/assets/img/preview.jpg?v=2">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -64,16 +64,16 @@
   </svg>
 
   <!-- ===== Loader ===== -->
-  <div class="loader" id="loader" role="status" aria-label="Memuat undangan">
+  <div class="loader" id="loader" role="status" aria-label="Loading invitation">
     <div class="loader__mark">
       <svg class="loader__ring" viewBox="0 0 200 200" aria-hidden="true">
         <path id="loaderPath" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" fill="none"/>
-        <text><textPath href="#loaderPath" textLength="488" lengthAdjust="spacing">MEMUAT UNDANGAN · MOHON TUNGGU SEBENTAR · </textPath></text>
+        <text><textPath href="#loaderPath" textLength="488" lengthAdjust="spacing">LOADING INVITATION · PLEASE WAIT A MOMENT · </textPath></text>
       </svg>
       <span class="loader__mono" data-initials>C&amp;F</span>
     </div>
     <p class="loader__tag">LOADING<span>.</span><span>.</span><span>.</span></p>
-    <p class="loader__text">Mohon tunggu…</p>
+    <p class="loader__text">Please wait…</p>
     <svg class="loader__wave" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 64C150 24 300 104 450 64S750 24 900 64 1150 104 1200 74V120H0Z" opacity=".35"/>
       <path d="M0 84C200 44 350 112 600 84S1000 52 1200 92V120H0Z" opacity=".6"/>
@@ -81,7 +81,7 @@
   </div>
 
   <!-- ===== Sampul: kartu krem bersudut bulat di atas latar bertekstur ===== -->
-  <section class="cover" id="cover" aria-label="Sampul undangan">
+  <section class="cover" id="cover" aria-label="Invitation cover">
     <div class="cover__card" id="coverCard">
       <div class="cover__inner">
         <div class="ring ring--cover" id="coverRing">
@@ -90,11 +90,11 @@
         <div class="cover__to">
           <p class="cover__dear">Dear</p>
           <p class="cover__guest" id="guestName"></p>
-          <p class="cover__note">Mohon maaf bila ada kesalahan penulisan nama dan gelar</p>
+          <p class="cover__note">We apologise for any misspelling of names or titles</p>
         </div>
         <button class="btn-open" id="openBtn" type="button">
           <svg class="icon" aria-hidden="true"><use href="#i-book-open"/></svg>
-          Buka Undangan
+          Open Invitation
         </button>
       </div>
     </div>
@@ -108,7 +108,7 @@
       <div class="arc arc--double reveal" style="--d:.2s" id="heroArc"></div>
       <div class="pair" id="heroPair"></div>
       <p class="hero__date reveal" data-date-long></p>
-      <a class="scroll-hint" href="#pembuka" data-scroll aria-label="Gulir ke bawah"><span></span></a>
+      <a class="scroll-hint" href="#pembuka" data-scroll aria-label="Scroll down"><span></span></a>
     </section>
 
     <!-- Pembuka: nama vertikal mengapit coretan, lalu kutipan -->
@@ -133,20 +133,20 @@
 
     <!-- Acara -->
     <section class="section" id="acara">
-      <p class="event-intro reveal">Bersama keluarga, kami mengundang Anda untuk merayakan pernikahan kami</p>
+      <p class="event-intro reveal">Together with our families, we invite you to celebrate our wedding</p>
       <p class="event-date reveal" id="eventDate"></p>
       <div id="eventList"></div>
       <div class="countdown reveal reveal--right" id="countdown">
-        <div class="countdown__unit"><span class="countdown__num" data-unit="d">0</span><span class="countdown__label">Hari</span></div>
-        <div class="countdown__unit"><span class="countdown__num" data-unit="h">00</span><span class="countdown__label">Jam</span></div>
-        <div class="countdown__unit"><span class="countdown__num" data-unit="m">00</span><span class="countdown__label">Menit</span></div>
-        <div class="countdown__unit"><span class="countdown__num" data-unit="s">00</span><span class="countdown__label">Detik</span></div>
+        <div class="countdown__unit"><span class="countdown__num" data-unit="d">0</span><span class="countdown__label">Days</span></div>
+        <div class="countdown__unit"><span class="countdown__num" data-unit="h">00</span><span class="countdown__label">Hours</span></div>
+        <div class="countdown__unit"><span class="countdown__num" data-unit="m">00</span><span class="countdown__label">Minutes</span></div>
+        <div class="countdown__unit"><span class="countdown__num" data-unit="s">00</span><span class="countdown__label">Seconds</span></div>
       </div>
-      <p class="countdown__done reveal" id="countdownDone" hidden>Hari bahagia telah tiba. Terima kasih atas doa Anda.</p>
+      <p class="countdown__done reveal" id="countdownDone" hidden>The happy day has arrived. Thank you for your prayers.</p>
       <p class="reveal" id="calendarWrap">
         <a class="link-ink" id="calendarBtn" target="_blank" rel="noopener">
           <svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>
-          Simpan ke kalender
+          Save to calendar
         </a>
       </p>
     </section>
@@ -181,49 +181,50 @@
     <section class="section" id="rsvp">
       <h2 class="title reveal"><span class="glyph" aria-hidden="true">⋆˚✧</span> RSVP <span class="glyph" aria-hidden="true">✧˚⋆</span></h2>
       <hr class="rule reveal">
-      <p class="lead reveal">Mohon konfirmasi kehadiran dan tuliskan ucapan terbaik Anda untuk kami.</p>
+      <p class="lead reveal">Kindly confirm your attendance and leave your best wishes for us.</p>
 
       <form class="form reveal reveal--zoom" id="rsvpForm" novalidate>
         <div class="field">
-          <label class="field__label" for="rsvpName">Nama</label>
-          <input class="input" id="rsvpName" type="text" maxlength="60" autocomplete="name" placeholder="Nama Anda" required>
+          <label class="field__label" for="rsvpName">Name</label>
+          <input class="input" id="rsvpName" type="text" maxlength="60" autocomplete="name" placeholder="Your name" required>
         </div>
         <fieldset class="field">
-          <legend class="field__label">Kehadiran</legend>
+          <legend class="field__label">Attendance</legend>
+          <!-- value tetap bahasa Indonesia (dipakai Code.gs); label yang tampil bahasa Inggris -->
           <div class="choices">
-            <label class="choice"><input type="radio" name="attendance" value="Hadir" required><span>Hadir</span></label>
-            <label class="choice"><input type="radio" name="attendance" value="Tidak Hadir"><span>Tidak Hadir</span></label>
-            <label class="choice"><input type="radio" name="attendance" value="Ragu"><span>Masih Ragu</span></label>
+            <label class="choice"><input type="radio" name="attendance" value="Hadir" required><span>Attending</span></label>
+            <label class="choice"><input type="radio" name="attendance" value="Tidak Hadir"><span>Not Attending</span></label>
+            <label class="choice"><input type="radio" name="attendance" value="Ragu"><span>Not Sure</span></label>
           </div>
         </fieldset>
         <div class="field" id="guestCountField" hidden>
-          <label class="field__label" for="rsvpGuests">Jumlah tamu</label>
+          <label class="field__label" for="rsvpGuests">Number of guests</label>
           <select class="input" id="rsvpGuests">
-            <option value="1">1 orang</option>
-            <option value="2">2 orang</option>
-            <option value="3">3 orang</option>
-            <option value="4">4 orang</option>
-            <option value="5">5 orang</option>
+            <option value="1">1 person</option>
+            <option value="2">2 people</option>
+            <option value="3">3 people</option>
+            <option value="4">4 people</option>
+            <option value="5">5 people</option>
           </select>
         </div>
         <div class="field">
-          <label class="field__label" for="rsvpMessage">Ucapan &amp; doa</label>
-          <textarea class="input" id="rsvpMessage" rows="4" maxlength="500" placeholder="Tulis ucapan untuk kedua mempelai" required></textarea>
+          <label class="field__label" for="rsvpMessage">Wishes &amp; prayers</label>
+          <textarea class="input" id="rsvpMessage" rows="4" maxlength="500" placeholder="Write your wishes for the bride and groom" required></textarea>
           <span class="field__count" aria-hidden="true"><span id="msgCount">0</span>/500</span>
         </div>
         <p class="form-error" id="rsvpError" role="alert" hidden></p>
         <button class="btn-ink btn-ink--block" type="submit" id="rsvpSubmit">
           <svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>
-          <span class="btn__label">Kirim Ucapan</span>
+          <span class="btn__label">Send Wishes</span>
         </button>
       </form>
 
       <div class="wishes reveal">
         <p class="wishes__stats" id="wishStats"></p>
         <ul class="wishes__list" id="wishList">
-          <li class="wishes__empty">Memuat ucapan…</li>
+          <li class="wishes__empty">Loading wishes…</li>
         </ul>
-        <button class="link-ink" type="button" id="moreWishes" hidden>Tampilkan lebih banyak</button>
+        <button class="link-ink" type="button" id="moreWishes" hidden>Show more</button>
       </div>
     </section>
 
@@ -237,17 +238,17 @@
 
     <!-- Penutup -->
     <section class="section closing" id="penutup">
-      <p class="closing__dear reveal">Untuk keluarga &amp; sahabat tercinta</p>
+      <p class="closing__dear reveal">To our beloved family &amp; friends</p>
       <div class="thanks reveal reveal--zoom">
-        <span class="sr-only">Terima kasih</span>
-        <span class="thanks__word thanks__word--a" aria-hidden="true">Terima</span>
+        <span class="sr-only">Thank you</span>
+        <span class="thanks__word thanks__word--a" aria-hidden="true">Thank</span>
         <span class="thanks__dots" aria-hidden="true"></span>
-        <span class="thanks__word thanks__word--b" aria-hidden="true">Kasih</span>
+        <span class="thanks__word thanks__word--b" aria-hidden="true">You</span>
       </div>
       <div class="arc reveal" id="closingArc"></div>
       <p class="closing__text reveal" id="closingText"></p>
       <p class="closing__greeting reveal" id="closingGreeting"></p>
-      <p class="closing__by reveal">Kami yang berbahagia</p>
+      <p class="closing__by reveal">With love,</p>
       <p class="closing__names reveal" data-names></p>
       <p class="closing__families reveal" id="closingFamilies"></p>
       <p class="scatter reveal" id="scatter"></p>
@@ -260,27 +261,27 @@
   </main>
 
   <!-- Tombol mengambang: kembali ke atas, mode baca, musik -->
-  <a class="float-btn top-btn" id="topBtn" href="#home" data-scroll data-locked aria-label="Kembali ke atas">
+  <a class="float-btn top-btn" id="topBtn" href="#home" data-scroll data-locked aria-label="Back to top">
     <svg class="icon" aria-hidden="true"><use href="#i-up"/></svg>
   </a>
-  <button class="float-btn read-btn" id="readBtn" type="button" aria-pressed="false" aria-label="Mode baca: gulir otomatis" data-locked>
+  <button class="float-btn read-btn" id="readBtn" type="button" aria-pressed="false" aria-label="Reading mode: auto-scroll" data-locked>
     <svg class="icon icon-read" aria-hidden="true"><use href="#i-book-open"/></svg>
     <svg class="icon icon-stop" aria-hidden="true"><use href="#i-pause"/></svg>
   </button>
-  <button class="float-btn music-btn" id="musicBtn" type="button" aria-label="Putar musik" aria-pressed="false" hidden>
+  <button class="float-btn music-btn" id="musicBtn" type="button" aria-label="Play music" aria-pressed="false" hidden>
     <svg class="icon icon-on" aria-hidden="true"><use href="#i-music"/></svg>
     <svg class="icon icon-off" aria-hidden="true"><use href="#i-music-off"/></svg>
   </button>
 
   <!-- Lightbox galeri -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Galeri foto" hidden>
-    <button class="lightbox__btn lightbox__close" id="lbClose" type="button" aria-label="Tutup"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
-    <button class="lightbox__btn lightbox__prev" id="lbPrev" type="button" aria-label="Foto sebelumnya"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg></button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo gallery" hidden>
+    <button class="lightbox__btn lightbox__close" id="lbClose" type="button" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <button class="lightbox__btn lightbox__prev" id="lbPrev" type="button" aria-label="Previous photo"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg></button>
     <figure class="lightbox__figure">
       <img id="lbImg" alt="">
       <figcaption id="lbCount"></figcaption>
     </figure>
-    <button class="lightbox__btn lightbox__next" id="lbNext" type="button" aria-label="Foto berikutnya"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></button>
+    <button class="lightbox__btn lightbox__next" id="lbNext" type="button" aria-label="Next photo"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></button>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
