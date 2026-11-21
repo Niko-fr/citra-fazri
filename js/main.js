@@ -129,7 +129,7 @@
     twinkles($('#penutup'), 6);
 
     const photos = C.photos || {};
-    const second = (C.gallery || [])[0] || photos.cover;
+    const second = (C.gallery || [])[0];
     const a = polaroid(photos.hero, 'Foto Utama', '', -4);
     const b = polaroid(second, 'Foto Kedua', '', 3.5);
     a.el.classList.add('reveal', 'reveal--left');

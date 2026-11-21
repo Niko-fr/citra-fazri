@@ -35,9 +35,9 @@ window.UNDANGAN = {
     photo: "assets/img/wanita.jpg"
   },
 
+  /* Gambar preview WhatsApp = assets/img/preview.jpg (diatur di <head> index.html) */
   photos: {
-    hero: "assets/img/hero.jpg",   // polaroid kiri di beranda (di bawah nama)
-    cover: "assets/img/cover.jpg"  // foto preview WhatsApp (og:image di index.html); juga cadangan polaroid kanan bila galeri kosong
+    hero: "assets/img/hero.jpg"   // polaroid kiri di beranda (di bawah nama)
   },
 
   /* Salam & kutipan pembuka — ganti sesuai keyakinan/selera (boleh dikosongkan) */
