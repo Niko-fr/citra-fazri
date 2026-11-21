@@ -64,11 +64,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .lead { max-width: 34ch; margin: 0 auto 26px; color: var(--ink-2); }
 .lead--gift { margin: 14px auto 0; }
 .amp { font-family: var(--serif); font-style: italic; }
-/* Nama mempelai di beranda: huruf kuas tebal (huruf kecil), bertumpuk, dengan garis
-   lengkung panjang di kiri nama pertama & di kanan nama kedua. Muncul seperti ditulis
-   tangan: garis kiri → nama pertama → "&" → nama kedua → garis kanan. */
+/* Nama mempelai di beranda: huruf kuas tebal (huruf kecil), bertumpuk. js/main.js
+   menggambar ulang tiap nama sebagai SVG dengan garis lengkung yang menyambung ke
+   huruf pertama (kiri) & terakhir (kanan). Muncul seperti ditulis tangan:
+   garis kiri → nama pertama → "&" → nama kedua → garis kanan. */
 .big-caps {
-  --tail: 1.35em; /* panjang garis lengkung */
   --pad: .4em;    /* ruang agar ujung huruf tidak terpotong saat animasi */
   display: grid; justify-items: center;
   margin: 0;
@@ -78,37 +78,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .big-caps > span:not(.amp) {
   position: relative;
-  padding: .2em var(--pad); margin: -.2em calc(var(--pad) * -1);
+  padding: .4em var(--pad); margin: -.4em calc(var(--pad) * -1); /* ruang juga untuk bayangan */
   clip-path: inset(0 0 0 0);
   transition: clip-path 1.6s cubic-bezier(.45, .05, .35, 1) calc(var(--d, 0s) + .15s);
 }
-.big-caps > span:first-child {
-  padding-left: calc(var(--pad) + var(--tail)); margin-left: calc((var(--pad) + var(--tail)) * -1);
-}
-.big-caps > span:last-child {
-  padding-right: calc(var(--pad) + var(--tail)); margin-right: calc((var(--pad) + var(--tail)) * -1);
-  transition-delay: calc(var(--d, 0s) + 1.25s);
-}
-/* Garis lengkung: SVG sebagai masker, jadi warnanya selalu mengikuti warna teks */
-.big-caps > span:first-child::before, .big-caps > span:last-child::after {
-  content: ""; position: absolute; top: .78em;
-  width: calc(var(--tail) + .08em); height: .42em;
-  background: currentColor;
-  -webkit-mask: var(--swash) no-repeat center / 100% 100%;
-  mask: var(--swash) no-repeat center / 100% 100%;
-}
-.big-caps > span:first-child::before {
-  left: var(--pad);
-  --swash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 40'%3E%3Cpath d='M9 25C2 25 2 15 10 15C18 15 19 25 30 26C70 31 120 30 158 21' fill='none' stroke='black' stroke-width='5.5' stroke-linecap='round'/%3E%3C/svg%3E");
-}
-.big-caps > span:last-child::after {
-  right: var(--pad);
-  --swash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 40'%3E%3Cpath d='M2 21C40 30 90 31 130 26C141 25 142 15 150 15C158 15 158 25 151 25' fill='none' stroke='black' stroke-width='5.5' stroke-linecap='round'/%3E%3C/svg%3E");
-}
+.big-caps > span:last-child { transition-delay: calc(var(--d, 0s) + 1.25s); }
+.big-caps .nm { display: block; overflow: visible; }
+.big-caps .amp { position: relative; z-index: 1; }
 .big-caps .amp {
   margin: .04em 0 .06em;
-  font-family: var(--names); font-size: .5em; font-style: normal; line-height: 1;
-  color: var(--ink-2);
+  font-family: var(--names); font-size: .55em; font-style: normal; line-height: 1;
+  color: var(--ink); -webkit-text-stroke: .02em currentColor;
   transition: opacity .8s ease calc(var(--d, 0s) + .9s);
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -1006,6 +986,7 @@ body.is-opened .read-btn { opacity: 1; transform: none; pointer-events: auto; }
 }
 /* Nama huruf sambung: bayangan lembut agar terlihat melayang di atas kertas */
 .t4 .big-caps { text-shadow: 1px 2px 0 rgba(194, 187, 169, .8), 0 12px 16px rgba(0, 0, 0, .16); }
+.t4 .big-caps .nm { filter: drop-shadow(1px 2px 0 rgba(194, 187, 169, .8)) drop-shadow(0 10px 8px rgba(0, 0, 0, .13)); }
 .t4 .title .ch {
   transform: perspective(400px) rotateX(-90deg) translateY(.3em);
   transform-origin: 50% 100%;

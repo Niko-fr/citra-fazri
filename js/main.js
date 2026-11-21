@@ -119,8 +119,127 @@
   /* Render                                                              */
   /* ------------------------------------------------------------------ */
 
+  /* ------------------------------------------------------------------ */
+  /* Nama di beranda: tiap nama digambar ulang sebagai SVG supaya garis   */
+  /* lengkung benar-benar menyambung ke goresan huruf pertama (kiri) dan  */
+  /* huruf terakhir (kanan). Titik sambung dicari dengan memindai piksel  */
+  /* huruf di kanvas, jadi tetap pas walau namanya diganti.               */
+  /* ------------------------------------------------------------------ */
+  const NAME_FONT = '"Dancing Script"';
+  const NAME_PX = 100;     /* ukuran acuan; SVG diskalakan lewat em */
+  const NAME_BOLD = 2.2;   /* tebal garis tepi huruf agar lebih tegas */
+  const TAIL = 150;        /* panjang garis lengkung (100 = 1em) */
+
+  /* Batas tinta paling kiri & kanan beserta tinggi goresannya (relatif garis dasar) */
+  function inkEdges(word) {
+    const cv = document.createElement('canvas');
+    const ctx = cv.getContext('2d');
+    const font = '700 ' + NAME_PX + 'px ' + NAME_FONT;
+    ctx.font = font;
+    const m = ctx.measureText(word);
+    const pad = 16;
+    const L = Math.ceil(m.actualBoundingBoxLeft) + pad, R = Math.ceil(m.actualBoundingBoxRight) + pad;
+    const A = Math.ceil(m.actualBoundingBoxAscent) + pad, D = Math.ceil(m.actualBoundingBoxDescent) + pad;
+    cv.width = L + R;
+    cv.height = A + D;
+    ctx.font = font;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = ctx.strokeStyle = '#000';
+    ctx.lineWidth = NAME_BOLD;
+    ctx.lineJoin = 'round';
+    ctx.fillText(word, L, A);
+    ctx.strokeText(word, L, A);
+    const px = ctx.getImageData(0, 0, cv.width, cv.height).data;
+    const column = x => {
+      let top = -1, bot = -1;
+      for (let y = 0; y < cv.height; y++) {
+        if (px[(y * cv.width + x) * 4 + 3] > 140) { if (top < 0) top = y; bot = y; }
+      }
+      return top < 0 ? null : { top: top - A, bot: bot - A };
+    };
+    let xl = 0;
+    while (xl < cv.width - 1 && !column(xl)) xl++;
+    let xr = cv.width - 1;
+    while (xr > 0 && !column(xr)) xr--;
+    return {
+      left: xl - L, leftRun: column(Math.min(xl + 2, cv.width - 1)) || column(xl),
+      right: xr - L, rightRun: column(Math.max(xr - 2, 0)) || column(xr),
+      asc: m.actualBoundingBoxAscent, desc: m.actualBoundingBoxDescent,
+      boxLeft: -m.actualBoundingBoxLeft, boxRight: m.actualBoundingBoxRight
+    };
+  }
+
+  /* Pita meruncing di sepanjang kurva Bézier kubik (lebar w0 → w1), seperti goresan kuas */
+  function ribbon(p, w0, w1) {
+    const N = 48, A = [], B = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, u = 1 - t;
+      const x = u * u * u * p[0][0] + 3 * u * u * t * p[1][0] + 3 * u * t * t * p[2][0] + t * t * t * p[3][0];
+      const y = u * u * u * p[0][1] + 3 * u * u * t * p[1][1] + 3 * u * t * t * p[2][1] + t * t * t * p[3][1];
+      const dx = 3 * u * u * (p[1][0] - p[0][0]) + 6 * u * t * (p[2][0] - p[1][0]) + 3 * t * t * (p[3][0] - p[2][0]);
+      const dy = 3 * u * u * (p[1][1] - p[0][1]) + 6 * u * t * (p[2][1] - p[1][1]) + 3 * t * t * (p[3][1] - p[2][1]);
+      const len = Math.hypot(dx, dy) || 1;
+      const w = (w0 + (w1 - w0) * t * t * (3 - 2 * t)) / 2;
+      A.push(f(x - dy / len * w) + ' ' + f(y + dx / len * w));
+      B.push(f(x + dy / len * w) + ' ' + f(y - dx / len * w));
+    }
+    return 'M' + A.join('L') + 'L' + B.reverse().join('L') + 'Z';
+  }
+
+  /* Ganti isi span nama dengan SVG: huruf + garis lengkung di sisi kiri atau kanan */
+  function swashName(span, side) {
+    const word = span.textContent.trim().toLowerCase();
+    if (!word) return;
+    const e = inkEdges(word);
+    const pt = (x, y) => f(x) + ' ' + f(y);
+    let tail, hook, end, reach;
+    if (side === 'left') {
+      const run = e.leftRun;
+      const J = [e.left + 4, run.top + (run.bot - run.top) * 0.6];      /* masuk ke goresan huruf pertama */
+      const S = [J[0] - TAIL, J[1] - 2];
+      tail = ribbon([S, [J[0] - TAIL * 0.5, J[1] + TAIL * 0.07], [J[0] - TAIL * 0.18, J[1] + TAIL * 0.05], J], 2.6, 7);
+      end = [S[0] - 3.5, S[1] + 8.5];
+      hook = 'M' + pt(S[0], S[1]) + 'C' + pt(S[0] - 6, S[1] + 0.5) + ' ' + pt(S[0] - 8.5, S[1] + 7) + ' ' + pt(end[0], end[1]);
+      reach = e.boxLeft - (S[0] - 12);
+    } else {
+      const run = e.rightRun;
+      const J = [e.right - 3, (run.top + run.bot) / 2];                  /* keluar dari ujung huruf terakhir */
+      const E = [J[0] + TAIL, J[1] + TAIL * 0.01];
+      tail = ribbon([J, [J[0] + TAIL * 0.18, J[1] - TAIL * 0.05], [J[0] + TAIL * 0.5, J[1] + TAIL * 0.07], E], 7, 2.6);
+      end = [E[0] + 3.5, E[1] - 8.5];
+      hook = 'M' + pt(E[0], E[1]) + 'C' + pt(E[0] + 6, E[1] - 0.5) + ' ' + pt(E[0] + 8.5, E[1] - 7) + ' ' + pt(end[0], end[1]);
+      reach = (E[0] + 12) - e.boxRight;
+    }
+    const vb = [e.boxLeft, -e.asc - 6, e.boxRight - e.boxLeft, e.asc + e.desc + 12];
+    const el = svg('svg', { class: 'nm', viewBox: vb.map(f).join(' '), 'aria-hidden': 'true',
+      style: 'width:' + (vb[2] / NAME_PX).toFixed(3) + 'em;height:' + (vb[3] / NAME_PX).toFixed(3) + 'em' });
+    const txt = svg('text', { x: 0, y: 0, 'font-family': NAME_FONT.replace(/"/g, ''), 'font-weight': 700, 'font-size': NAME_PX,
+      fill: 'currentColor', stroke: 'currentColor', 'stroke-width': NAME_BOLD, 'stroke-linejoin': 'round' });
+    txt.textContent = word;
+    el.append(txt,
+      svg('path', { d: tail, fill: 'currentColor' }),
+      svg('path', { d: hook, fill: 'none', stroke: 'currentColor', 'stroke-width': 2.6, 'stroke-linecap': 'round' }),
+      svg('circle', { cx: f(end[0]), cy: f(end[1]), r: 2.2, fill: 'currentColor' }));
+    span.textContent = '';
+    span.append(h('span', { class: 'sr-only' }, word), el);
+    /* Garis menjorok ke luar kotak huruf: beri ruang agar tidak terpotong animasi "ditulis" */
+    const room = 'calc(var(--pad) + ' + (reach / NAME_PX).toFixed(3) + 'em)';
+    if (side === 'left') { span.style.paddingLeft = room; span.style.marginLeft = 'calc(' + room + ' * -1)'; }
+    else { span.style.paddingRight = room; span.style.marginRight = 'calc(' + room + ' * -1)'; }
+  }
+
+  function swashNames() {
+    const box = $('.big-caps');
+    if (!box) return;
+    const a = $('[data-name1]', box), b = $('[data-name2]', box);
+    const go = () => { swashName(a, 'left'); swashName(b, 'right'); box.classList.add('has-swash'); };
+    if (document.fonts && document.fonts.load) document.fonts.load('700 100px ' + NAME_FONT, a.textContent + b.textContent).then(go, go);
+    else go();
+  }
+
   function renderBasics() {
     U.bindText();
+    swashNames();
     const ringText = (['The Wedding of', U.names, 'Save the Date', shortDate()].filter(Boolean).join(' · ') + ' · ').toUpperCase();
     $('#coverRing').prepend(ringSvg(ringText));
     $('#heroArc').append(arcSvg('two hearts, one story', 'together, always'));
