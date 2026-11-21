@@ -275,10 +275,23 @@
     }
   };
 
+  /* Coba ulang bila server Google sedang sibuk (mis. ratusan tamu membuka bersamaan).
+     Jeda makin panjang + acak, supaya tamu tidak mencoba ulang di detik yang sama. */
+  async function withRetry(task, tries) {
+    for (let i = 0; ; i++) {
+      try { return await task(); }
+      catch (err) {
+        if (i >= tries - 1) throw err;
+        await new Promise(r => setTimeout(r, 1200 * Math.pow(2, i) + Math.random() * 1500));
+      }
+    }
+  }
+
   async function fetchWishes() {
     if (!endpoint) return localStore.read();
     const url = endpoint + (endpoint.indexOf('?') >= 0 ? '&' : '?') + 'action=list&t=' + Date.now();
     const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || 'Gagal memuat ucapan');
     return json.data;
@@ -298,6 +311,7 @@
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(entry)
     });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || 'Gagal mengirim ucapan');
     return json.data;
@@ -368,7 +382,7 @@
       submit.disabled = true;
       submitLabel.textContent = 'Sending…';
       try {
-        const saved = await sendWish(entry);
+        const saved = await withRetry(() => sendWish(entry), 2);
         wishes.unshift(Object.assign(saved || Object.assign({ timestamp: new Date().toISOString() }, entry), { isNew: true }));
         render();
         wishes[0].isNew = false;
@@ -390,14 +404,36 @@
     if (!endpoint) {
       console.info('[undangan] RSVP mode demo: ucapan hanya tersimpan di browser ini. Isi rsvp.endpoint di js/config.js (lihat README di folder undangan-catatan).');
     }
-    fetchWishes()
-      .then(list => { wishes = Array.isArray(list) ? list : []; render(); })
-      .catch(err => {
-        console.error('[undangan]', err);
-        const list = $('#wishList');
-        list.textContent = '';
-        list.append(h('li', { class: 'wishes__empty' }, 'Wishes could not be loaded. Please reload the page.'));
-      });
+    /* Daftar ucapan baru dimuat saat tamu mendekati bagian RSVP (bukan saat undangan
+       dibuka), jadi permintaan ke Google tersebar walau banyak tamu membuka bersamaan. */
+    let loading = false;
+    const load = () => {
+      if (loading) return;
+      loading = true;
+      withRetry(fetchWishes, 4)
+        .then(list => {
+          const fromServer = Array.isArray(list) ? list : [];
+          /* ucapan yang baru saja dikirim tamu ini tetap di atas bila belum ada di data server */
+          const mine = wishes.filter(w => !fromServer.some(s => s.name === w.name && s.message === w.message));
+          wishes = mine.concat(fromServer);
+          render();
+        })
+        .catch(err => {
+          console.error('[undangan]', err);
+          const list = $('#wishList');
+          list.textContent = '';
+          list.append(h('li', { class: 'wishes__empty' }, 'Wishes could not be loaded. Please reload the page.'));
+        });
+    };
+    const area = form.closest('section') || form;
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => {
+        if (entries.some(e => e.isIntersecting)) { io.disconnect(); load(); }
+      }, { rootMargin: '900px 0px' });
+      io.observe(area);
+    } else {
+      load();
+    }
   }
 
   /* ------------------------------------------------------------------ */
