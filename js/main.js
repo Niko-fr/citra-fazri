@@ -497,11 +497,26 @@
   function renderEvents() {
     if (!U.mainEvent) return;
     const main = U.dateParts(U.mainEvent.start);
-    $('#eventDate').append(main.weekday + ',', h('br'), main.day.replace(/^0/, '') + ' ' + main.month + ' ' + main.year);
     const sameDay = ev => {
       const p = U.dateParts(ev.start);
       return p.day === main.day && p.monthNum === main.monthNum && p.year === main.year;
     };
+    /* Acara di beberapa hari: judul "18 & 19 December 2026", dan tiap acara menampilkan tanggalnya */
+    const multiDay = U.events.some(ev => !sameDay(ev));
+    if (multiDay) {
+      const days = [];
+      let sameMonth = true;
+      U.events.forEach(ev => {
+        const p = U.dateParts(ev.start);
+        if (p.monthNum !== main.monthNum || p.year !== main.year) sameMonth = false;
+        const d = p.day.replace(/^0/, '');
+        if (days.indexOf(d) < 0) days.push(d);
+      });
+      if (sameMonth) $('#eventDate').append(days.join(' & '), h('br'), main.month + ' ' + main.year);
+      else $('#eventDate').append(Array.from(new Set(U.events.map(ev => U.dotDate(ev.start, '.')))).join(' & '));
+    } else {
+      $('#eventDate').append(main.weekday + ',', h('br'), main.day.replace(/^0/, '') + ' ' + main.month + ' ' + main.year);
+    }
 
     const groups = [];
     U.events.forEach(ev => {
@@ -517,7 +532,7 @@
       $('#eventList').append(h('div', { class: 'venue-block' },
         h('div', { class: 'event-cols reveal' }, g.events.map(ev => h('div', { class: 'event-col' },
           h('h3', null, ev.title),
-          sameDay(ev) ? null : h('p', { class: 'event-col__date' }, U.longDate(ev.start)),
+          multiDay ? h('p', { class: 'event-col__date' }, U.longDate(ev.start)) : null,
           h('p', null, U.timeRange(ev))
         ))),
         gi === 0 ? roadBox() : null,

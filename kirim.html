@@ -186,12 +186,23 @@
     /* ---------- Data dari config.js ---------- */
     const people = C.groom && C.bride ? (C.brideFirst ? [C.bride, C.groom] : [C.groom, C.bride]) : null;
     const couple = people ? people.map(p => p.nickname).join(' & ') : 'Kedua Mempelai';
-    const firstEvent = (C.events || [])[0];
-    const tanggal = firstEvent
-      ? new Intl.DateTimeFormat('id-ID', {
-          timeZone: C.timeZone || 'Asia/Jakarta', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        }).format(new Date(firstEvent.start))
-      : '';
+    /* {tanggal}: satu hari → "Sabtu, 19 Desember 2026"; beberapa hari di bulan yang sama →
+       "18 & 19 Desember 2026"; selain itu → "31 Desember 2026 & 1 Januari 2027" */
+    const tanggal = (function () {
+      const evs = C.events || [];
+      if (!evs.length) return '';
+      const fmt = opts => iso => new Intl.DateTimeFormat('id-ID', Object.assign({ timeZone: C.timeZone || 'Asia/Jakarta' }, opts)).format(new Date(iso));
+      const full = fmt({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const day = fmt({ day: 'numeric' });
+      const monthYear = fmt({ month: 'long', year: 'numeric' });
+      const dayMonthYear = fmt({ day: 'numeric', month: 'long', year: 'numeric' });
+      const uniq = list => list.filter((v, i) => list.indexOf(v) === i);
+      const dates = uniq(evs.map(ev => dayMonthYear(ev.start)));
+      if (dates.length === 1) return full(evs[0].start);
+      const months = uniq(evs.map(ev => monthYear(ev.start)));
+      if (months.length === 1) return uniq(evs.map(ev => day(ev.start))).join(' & ') + ' ' + months[0];
+      return dates.join(' & ');
+    })();
 
     const DEFAULT_TEMPLATE = [
       'Kepada Yth.',

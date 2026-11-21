@@ -165,7 +165,9 @@
   const mainEvent = events[0];
   const roleLabel = p => (p === C.groom ? 'The Groom' : 'The Bride');
 
+  /* Jam acara; ev.timeText (mis. "Time to be announced") menggantikan jam bila belum pasti */
   function timeRange(ev) {
+    if (ev.timeText) return ev.timeText;
     return ev.end
       ? timeOf(ev.start) + ' – ' + timeOf(ev.end) + ' ' + TZ_LABEL
       : timeOf(ev.start) + ' ' + TZ_LABEL + ' onwards';
@@ -174,17 +176,21 @@
   const mapsLink = ev => ev.mapsUrl || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(placeQuery(ev));
   const mapEmbedUrl = ev => 'https://maps.google.com/maps?q=' + encodeURIComponent(placeQuery(ev)) + '&z=15&output=embed';
 
+  /* Simpan ke Google Calendar. Bila semua acara di hari yang sama: satu jadwal dari acara
+     pertama sampai acara terakhir. Bila berbeda hari: jadwal acara pertama saja. */
   function calendarUrl() {
     if (!mainEvent) return '';
     const last = events[events.length - 1];
-    const end = last.end ? new Date(last.end) : new Date(new Date(last.start).getTime() + 2 * 3600e3);
+    const sameDay = dotDate(last.start) === dotDate(mainEvent.start);
+    const until = sameDay && !last.timeText ? last : mainEvent;
+    const end = until.end ? new Date(until.end) : new Date(new Date(until.start).getTime() + 2 * 3600e3);
     const stamp = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-    const details = events.map(ev => ev.title + ': ' + timeOf(ev.start) + ' ' + TZ_LABEL + ' — ' + ev.venue).join('\n');
+    const details = events.map(ev => ev.title + ': ' + longDate(ev.start) + ', ' + timeRange(ev) + ' — ' + placeQuery(ev)).join('\n\n');
     return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
       '&text=' + encodeURIComponent('Wedding of ' + names) +
       '&dates=' + stamp(new Date(mainEvent.start)) + '/' + stamp(end) +
       '&details=' + encodeURIComponent(details) +
-      '&location=' + encodeURIComponent(placeQuery(last));
+      '&location=' + encodeURIComponent(placeQuery(sameDay ? last : mainEvent));
   }
 
   function guestFromUrl() {

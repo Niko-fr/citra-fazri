@@ -22,16 +22,16 @@ window.UNDANGAN = {
 
   groom: {
     nickname: "Alfazri",
-    fullName: "Alfazri", // nama lengkap + gelar, mis. "Alfazri Pratama, S.T."
-    parents: "First son of Mr. Hendra Wijaya & Mrs. Sri Lestari",
+    fullName: "Alfazri Haryana", // nama lengkap + gelar, mis. "Alfazri Haryana, S.T."
+    parents: "First son of Mr. Syamsul Azis & Mrs. Diana",
     instagram: "", // tanpa @ — kosongkan bila tidak ingin ditampilkan
     photo: "assets/img/pria.jpg"
   },
 
   bride: {
     nickname: "Citra",
-    fullName: "Citra", // nama lengkap + gelar, mis. "Citra Lestari, S.Psi."
-    parents: "Second daughter of Mr. Ahmad Fauzi & Mrs. Ratna Dewi",
+    fullName: "Citra Aulia", // nama lengkap + gelar, mis. "Citra Aulia, S.Psi."
+    parents: "Fourth daughter of Mr. Hardi Syahbana & Mrs. Upik Pratini",
     instagram: "",
     photo: "assets/img/wanita.jpg"
   },
@@ -49,23 +49,26 @@ window.UNDANGAN = {
     quoteSource: "Surah Ar-Rum: 21"
   },
 
-  /* Acara pertama dipakai untuk hitung mundur */
+  /* Acara pertama dipakai untuk hitung mundur.
+     timeText (opsional): tulisan pengganti jam, mis. bila jam belum pasti.
+     Hapus timeText dan isi start/end bila jamnya sudah pasti. */
   events: [
     {
       title: "Marriage Ceremony",
-      start: "2026-12-19T08:00:00+07:00",
-      end: "2026-12-19T10:00:00+07:00", // isi "" untuk menampilkan "... onwards"
-      venue: "Masjid Raya Al-Ikhlas",
-      address: "Jl. Kenanga Raya No. 8, Kebayoran Baru, Jakarta Selatan",
+      start: "2026-12-18T09:00:00+07:00", // jam belum pasti — perbarui bila sudah final
+      end: "2026-12-18T11:00:00+07:00",   // isi "" untuk menampilkan "... onwards"
+      venue: "KUA Pondok Aren",
+      address: "Jl. Graha Raya Bintaro No.1, Parigi Baru, Kec. Pondok Aren, Kota Tangerang Selatan, Banten 15228",
       mapsUrl: "",   // link dari Google Maps (Bagikan → Salin link). Kosong = dicari dari nama & alamat
       showMap: false // true = tampilkan peta di dalam kartu
     },
     {
       title: "Wedding Reception",
-      start: "2026-12-19T11:00:00+07:00",
-      end: "2026-12-19T14:00:00+07:00",
-      venue: "Gedung Serbaguna Pandawa",
-      address: "Jl. Melati No. 21, Cilandak, Jakarta Selatan",
+      start: "2026-12-19T00:00:00+07:00", // tanggal saja; jam menyusul
+      end: "",
+      timeText: "Time to be announced",   // hapus baris ini setelah jam resepsi pasti
+      venue: "Kampung Kari 88",
+      address: "Jl. DR. Setiabudi (Jl. Kp. Bulak) No. 88, RT. 004/RW. 003, Pondok Kacang Timur, Kecamatan Pondok Aren, Kota Tangerang Selatan, Banten 15226",
       mapsUrl: "",
       showMap: true
     }
@@ -148,7 +151,7 @@ window.UNDANGAN = {
   closing: {
     text: "It would be an honour and a joy for us if you could attend and give us your blessings. Thank you for your presence and your prayers.",
     greeting: "Wassalamu'alaikum Warahmatullahi Wabarakatuh",
-    families: "The families of Mr. Hendra Wijaya & Mr. Ahmad Fauzi"
+    families: "The families of Mr. Hardi Syahbana & Mr. Syamsul Azis"
   },
 
   /* Musik latar — mulai saat tamu menekan "Open Invitation".
