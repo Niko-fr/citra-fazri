@@ -127,7 +127,7 @@ window.UNDANGAN = {
   rsvp: {
     /* URL Web App Google Apps Script (lihat README di folder undangan-catatan).
        Kosong = mode demo: ucapan hanya tersimpan di browser masing-masing tamu. */
-    endpoint: "",
+    endpoint: "https://script.google.com/macros/s/AKfycbw5Gzp1-VwLvow9dyp35MmKjauCrQ_P8H-R83aCpT381sr-dhsRlE4GUs9g88vHwyU/exec",
     pageSize: 8
   },
 
