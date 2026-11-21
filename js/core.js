@@ -305,8 +305,10 @@
 
   /**
    * Formulir RSVP + daftar ucapan. js/main.js menyediakan:
-   *   view.item(wish, attendance) → <li> satu ucapan
+   *   view.item(wish, attendance) → <li> satu ucapan (wish.isNew = baru saja dikirim)
    *   view.stats(count, total)    → (opsional) tampilkan rekap {yes, no, maybe}
+   *   view.sticker()              → (opsional) id stiker yang dipilih, '' bila tidak ada
+   *   view.clearSticker()         → (opsional) kosongkan pilihan stiker setelah terkirim
    * Elemen yang dipakai: #rsvpForm #rsvpName #rsvpMessage #rsvpGuests #guestCountField
    *   #msgCount #rsvpError #rsvpSubmit(.btn__label) #wishList #moreWishes
    */
@@ -348,15 +350,18 @@
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const checked = form.querySelector('input[name="attendance"]:checked');
+      const text = msgInput.value.trim();
+      /* Stiker disimpan sebagai kode di AWAL ucapan, jadi tidak terpotong batas 500 huruf */
+      const sticker = view.sticker ? view.sticker() : '';
       const entry = {
         name: nameInput.value.replace(/\s+/g, ' ').trim(),
         attendance: checked ? checked.value : '',
         guests: 0,
-        message: msgInput.value.trim()
+        message: ((sticker ? '[sticker:' + sticker + '] ' : '') + text).trim()
       };
       if (!entry.name) { showError('Please enter your name.'); nameInput.focus(); return; }
       if (!entry.attendance) { showError('Please choose your attendance.'); return; }
-      if (!entry.message) { showError('Please write your wishes.'); msgInput.focus(); return; }
+      if (!text && !sticker) { showError('Please write your wishes or choose a sticker.'); msgInput.focus(); return; }
       if (entry.attendance === 'Hadir') entry.guests = Number($('#rsvpGuests').value) || 1;
       showError('');
 
@@ -364,10 +369,12 @@
       submitLabel.textContent = 'Sending…';
       try {
         const saved = await sendWish(entry);
-        wishes.unshift(saved || Object.assign({ timestamp: new Date().toISOString() }, entry));
+        wishes.unshift(Object.assign(saved || Object.assign({ timestamp: new Date().toISOString() }, entry), { isNew: true }));
         render();
+        wishes[0].isNew = false;
         msgInput.value = '';
         $('#msgCount').textContent = '0';
+        if (view.clearSticker) view.clearSticker();
         toast('Thank you for your wishes and prayers!');
       } catch (err) {
         console.error('[undangan]', err);

@@ -728,6 +728,28 @@ select.input {
 .badge { padding: 0 9px; border: 1px solid var(--ink); border-radius: 999px; font-size: 10.5px; font-weight: 600; line-height: 1.8; }
 .badge--yes { background: var(--ink); color: var(--cream); }
 .badge--maybe { border-style: dashed; }
+/* ---------- Stiker ucapan (gambar di js/stickers.js) ---------- */
+.field__hint { font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.sticker-pick {
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, 66px); grid-auto-columns: 66px; gap: 6px;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin;
+  margin: 0 -6px; padding: 4px 6px 10px;
+}
+.sticker-btn {
+  display: block; width: 66px; height: 66px; padding: 7px;
+  border: 1.5px solid transparent; border-radius: 16px; background: transparent;
+  cursor: pointer; scroll-snap-align: start; -webkit-tap-highlight-color: transparent;
+  transition: transform .2s var(--ease), border-color .2s, background-color .2s;
+}
+.sticker-btn svg { display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.sticker-btn:hover { transform: rotate(-4deg) scale(1.06); }
+.sticker-btn[aria-checked="true"] { border-color: var(--ink); background-color: rgba(30, 30, 28, .07); animation: stk-pick .45s var(--ease); }
+.wish--sticker { display: flow-root; }
+.wish__sticker { float: right; width: 84px; height: 84px; margin: -4px -4px 4px 10px; overflow: visible; }
+.wish.is-new .wish__sticker { animation: stk-in .7s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes stk-pick { 40% { transform: scale(1.15) rotate(5deg); } }
+@keyframes stk-in { from { opacity: 0; transform: scale(.2) rotate(-25deg); } }
+
 .wishes__empty { padding: 20px; border: 1.5px dashed var(--line); border-radius: 12px; font-size: 14px; text-align: center; color: var(--muted); }
 .wishes .link-ink { display: flex; margin: 14px auto 0; }
 

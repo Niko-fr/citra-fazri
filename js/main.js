@@ -893,13 +893,54 @@
   /* Ucapan                                                              */
   /* ------------------------------------------------------------------ */
 
+  /* Stiker ucapan (gambarnya di js/stickers.js). Kode "[sticker:id]" di awal ucapan
+     diganti gambar; id yang tidak dikenal dibuang, jadi hanya stiker bawaan yang tampil. */
+  const STK = window.UndanganStickers || { list: [], map: {} };
+  const STICKER_CODE = /^\[sticker:([a-z0-9-]+)\]\s*/;
+
+  function stickerSvg(id, cls, decorative) {
+    const s = STK.map[id];
+    if (!s) return null;
+    const el = document.createElementNS(SVG_NS, 'svg');
+    el.setAttribute('viewBox', '0 0 100 100');
+    el.setAttribute('class', cls);
+    if (decorative) el.setAttribute('aria-hidden', 'true');
+    else { el.setAttribute('role', 'img'); el.setAttribute('aria-label', 'Sticker: ' + s.label); }
+    el.innerHTML = '<g fill="none" stroke="#1E1E1C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#stk-cut)">' + s.svg + '</g>';
+    return el;
+  }
+
+  /* Pilihan stiker di formulir: ketuk untuk memilih, ketuk lagi untuk batal */
+  function initStickerPicker() {
+    const box = $('#stickerPick');
+    if (!box || !STK.list.length) {
+      if (box) box.closest('.field').remove();
+      return { get: () => '', clear() {} };
+    }
+    let chosen = '';
+    const sync = () => $$('.sticker-btn', box).forEach(b => b.setAttribute('aria-checked', String(b.dataset.id === chosen)));
+    STK.list.forEach(s => {
+      box.append(h('button', {
+        type: 'button', class: 'sticker-btn', role: 'radio', 'aria-checked': 'false',
+        'aria-label': s.label, title: s.label, 'data-id': s.id,
+        onclick: () => { chosen = chosen === s.id ? '' : s.id; sync(); }
+      }, stickerSvg(s.id, 'sticker-btn__img', true)));
+    });
+    return { get: () => chosen, clear: () => { chosen = ''; sync(); } };
+  }
+
   function wishItem(w, att) {
-    return h('li', { class: 'wish' },
+    let msg = String(w.message || '');
+    const code = msg.match(STICKER_CODE);
+    const sticker = code ? stickerSvg(code[1], 'wish__sticker') : null;
+    if (code) msg = msg.slice(code[0].length);
+    return h('li', { class: 'wish' + (sticker ? ' wish--sticker' : '') + (w.isNew ? ' is-new' : '') },
+      sticker,
       h('p', { class: 'wish__head' },
         h('span', { class: 'wish__name' }, String(w.name || 'Guest')),
         att ? h('span', { class: 'badge badge--' + att.kind }, att.label) : null
       ),
-      h('p', { class: 'wish__msg' }, String(w.message || '')),
+      msg ? h('p', { class: 'wish__msg' }, msg) : null,
       h('time', { class: 'wish__time', datetime: w.timestamp }, U.timeAgo(w.timestamp))
     );
   }
@@ -1062,7 +1103,8 @@
   renderGift();
   renderClosing();
   splitTitles();
-  U.initRsvp({ item: wishItem, stats: wishStats });
+  const stickers = initStickerPicker();
+  U.initRsvp({ item: wishItem, stats: wishStats, sticker: stickers.get, clearSticker: stickers.clear });
   U.initNav();
   initTopButton();
   initReadMode();

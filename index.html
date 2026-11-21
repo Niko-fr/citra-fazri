@@ -61,6 +61,17 @@
     <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
     <symbol id="i-music-off" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M3 3l18 18"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <!-- Tepi putih + bayangan tipis untuk stiker ucapan (js/stickers.js) -->
+    <filter id="stk-cut" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="4" result="grow"/>
+      <feFlood flood-color="#fff"/>
+      <feComposite in2="grow" operator="in" result="border"/>
+      <feGaussianBlur in="grow" stdDeviation="2.5" result="blur"/>
+      <feOffset in="blur" dy="2.5" result="sh"/>
+      <feFlood flood-color="#000" flood-opacity=".18"/>
+      <feComposite in2="sh" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </svg>
 
   <!-- ===== Loader ===== -->
@@ -212,6 +223,10 @@
           <textarea class="input" id="rsvpMessage" rows="4" maxlength="500" placeholder="Write your wishes for the bride and groom" required></textarea>
           <span class="field__count" aria-hidden="true"><span id="msgCount">0</span>/500</span>
         </div>
+        <div class="field">
+          <p class="field__label" id="stickerLabel">Sticker <span class="field__hint">· optional, swipe for more →</span></p>
+          <div class="sticker-pick" id="stickerPick" role="radiogroup" aria-labelledby="stickerLabel"></div>
+        </div>
         <p class="form-error" id="rsvpError" role="alert" hidden></p>
         <button class="btn-ink btn-ink--block" type="submit" id="rsvpSubmit">
           <svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>
@@ -289,6 +304,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/core.js"></script>
+  <script src="js/stickers.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
