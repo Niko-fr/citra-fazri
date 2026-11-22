@@ -97,13 +97,45 @@
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
 
+  /* Foto boleh berakhiran .jpg / .jpeg (huruf besar atau kecil), .png, atau .webp:
+     bila file sesuai config.js tidak ada, ekstensi lain dicoba dulu sebelum placeholder.
+     Alamat yang sudah terbukti ada/tidak ada diingat, jadi foto yang dipakai di beberapa
+     tempat tidak dicari ulang. */
+  const PHOTO_EXT = ['.jpg', '.jpeg', '.JPG', '.JPEG', '.png', '.webp'];
+  const photoFound = {};          /* path di config → alamat yang berhasil dimuat */
+  const photoMissing = new Set(); /* alamat yang sudah gagal dimuat */
+
+  function photoCandidates(src) {
+    const m = String(src).match(/^(.*)\.(jpe?g|png|webp)$/i);
+    const list = [src].concat(m ? PHOTO_EXT.map(ext => m[1] + ext) : []);
+    return list.map(asset).filter((url, i, all) => all.indexOf(url) === i);
+  }
+
   function setPhoto(img, src, label) {
     if (!img) return;
-    img.addEventListener('error', function onError() {
-      img.removeEventListener('error', onError);
-      img.src = placeholder(label);
-    });
-    img.src = src ? asset(src) : placeholder(label);
+    if (!src) { img.src = placeholder(label); return; }
+    const list = photoCandidates(src);
+    const next = from => {
+      for (let i = from; i < list.length; i++) if (!photoMissing.has(list[i])) return i;
+      return -1;
+    };
+    let at = photoFound[src] ? list.indexOf(photoFound[src]) : next(0);
+    const onLoad = () => {
+      if (img.src.indexOf('data:') !== 0) photoFound[src] = img.src;
+    };
+    const onError = () => {
+      if (img.src.indexOf('data:') === 0) return;
+      photoMissing.add(list[at]);
+      at = next(at + 1);
+      if (at >= 0) img.src = list[at];
+      else {
+        img.removeEventListener('error', onError);
+        img.src = placeholder(label);
+      }
+    };
+    img.addEventListener('load', onLoad);
+    img.addEventListener('error', onError);
+    img.src = at >= 0 ? list[at] : placeholder(label);
   }
 
   /* ------------------------------------------------------------------ */

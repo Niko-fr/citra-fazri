@@ -7,6 +7,7 @@
    - Tanggal   : format "TAHUN-BULAN-TANGGALTJAM:MENIT:00+07:00"
                  (+07:00 = WIB, +08:00 = WITA, +09:00 = WIT).
    - Foto      : simpan di folder assets/img lalu sesuaikan nama filenya di sini.
+                 Ekstensi bebas: .jpg, .jpeg, .JPG, .png, atau .webp (dicari otomatis).
                  Selama foto belum ada, halaman menampilkan placeholder.
    ========================================================================== */
 window.UNDANGAN = {
