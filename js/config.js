@@ -140,14 +140,13 @@ window.UNDANGAN = {
     accounts: [
       { bank: "BCA", number: "3450565198", holder: "Alfazri Haryana" },
       { bank: "BCA", number: "5315136242", holder: "Citra Aulia" },
-      { bank: "GoPay", number: "081200001111", holder: "Citra" } // CONTOH — ganti atau hapus baris ini sebelum disebar
+      { bank: "GoPay", number: "081539812101", holder: "Citra Aulia" }
     ],
-    /* Hapus blok address (atau isi null) bila tidak menerima kiriman kado.
-       CONTOH — ganti dengan alamat asli sebelum disebar. */
+    /* Hapus blok address (atau isi null) bila tidak menerima kiriman kado */
     address: {
-      recipient: "Citra",
-      phone: "0812-0000-1111",
-      text: "Jl. Melati No. 21, Cilandak, Jakarta Selatan 12430"
+      recipient: "Citra Aulia",
+      phone: "0815-3981-2101",
+      text: "Kavling Pondok Kacang Permai, Jalan Dr Setia Budi, RT.4/RW.2, Kel Pd. Kacang Tim, Pondok Kacang Barat"
     }
   },
 
