@@ -138,10 +138,12 @@ window.UNDANGAN = {
   gift: {
     text: "Your prayers and blessings mean the world to us. However, if you wish to give a token of love, you may do so through:",
     accounts: [
-      { bank: "BCA", number: "1234567890", holder: "Alfazri" },
-      { bank: "GoPay", number: "081200001111", holder: "Citra" }
+      { bank: "BCA", number: "3450565198", holder: "Alfazri Haryana" },
+      { bank: "BCA", number: "5315136242", holder: "Citra Aulia" },
+      { bank: "GoPay", number: "081200001111", holder: "Citra" } // CONTOH — ganti atau hapus baris ini sebelum disebar
     ],
-    /* Hapus blok address (atau isi null) bila tidak menerima kiriman kado */
+    /* Hapus blok address (atau isi null) bila tidak menerima kiriman kado.
+       CONTOH — ganti dengan alamat asli sebelum disebar. */
     address: {
       recipient: "Citra",
       phone: "0812-0000-1111",
