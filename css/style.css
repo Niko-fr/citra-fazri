@@ -801,6 +801,95 @@ select.input {
 .gift__address { max-width: 30ch; margin: 0 auto 10px; font-size: 14px; color: var(--ink-2); }
 .gift__address strong { color: var(--ink); }
 
+/* ---------- Kartu rekening: kartu hitam premium 3D (desain sendiri) ----------
+   .bank-card     : wadah berperspektif (miring mengikuti mouse / gerakan HP di Tema 3D)
+   .bank-card__face: kartu yang melayang pelan + kilau cahaya yang menyapu */
+.gift--card { padding: 18px 0 10px; }
+.gift--card + .gift { border-top: 0; }
+.bank-card {
+  width: min(100%, 330px); aspect-ratio: 1.586;
+  margin: 4px auto 0; perspective: 900px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.bank-card__face {
+  position: relative; height: 100%; overflow: hidden;
+  border-radius: 16px; color: #EDEAE2; text-align: left;
+  background:
+    radial-gradient(120% 90% at 8% 0%, rgba(255, 255, 255, .16), transparent 55%),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, .035) 0 2px, transparent 2px 7px),
+    linear-gradient(135deg, #2c2c2c 0%, #111 46%, #1d1d1d 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, .2) inset, 0 -1px 0 rgba(0, 0, 0, .6) inset,
+    0 6px 0 -1px #050505, 0 26px 34px -18px rgba(0, 0, 0, .7);
+  transform: rotateX(6deg) rotateY(-8deg);
+  animation: card-float 6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -2s);
+}
+.bank-card--gopay .bank-card__face {
+  background:
+    radial-gradient(120% 90% at 8% 0%, rgba(255, 255, 255, .16), transparent 55%),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, .035) 0 2px, transparent 2px 7px),
+    linear-gradient(135deg, #12414c 0%, #082229 48%, #0e3540 100%);
+}
+.bank-card__face::after {   /* kilau cahaya */
+  content: ""; position: absolute; inset: -40% -60%; pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .18) 48%, rgba(255, 255, 255, .05) 52%, transparent 60%);
+  translate: -60% 0;
+  animation: card-shine 6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 1.4s);
+}
+.bank-card.is-copied .bank-card__face::after { animation: card-shine-now .8s ease-out; }
+.bank-card.is-copied .bank-card__face { animation: card-float 6s ease-in-out infinite, card-pop .45s var(--ease); }
+.bank-card__bank {
+  position: absolute; top: 16px; left: 20px; margin: 0;
+  font: italic 800 22px/1 var(--sans); letter-spacing: .04em; color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
+}
+.bank-card__nfc {
+  position: absolute; top: 15px; right: 16px; width: 26px; height: 26px;
+  fill: none; stroke: rgba(237, 234, 226, .75); stroke-width: 1.8; stroke-linecap: round;
+}
+.bank-card__chip {
+  position: absolute; top: 31%; left: 20px; width: 44px; height: 33px; border-radius: 7px;
+  background: linear-gradient(135deg, #F6E2A4, #C9A34E 45%, #F2D98D 70%, #B38A37);
+  box-shadow: inset 0 0 0 1px rgba(90, 60, 10, .45), 0 1px 2px rgba(0, 0, 0, .5);
+}
+.bank-card__chip::before { content: ""; position: absolute; inset: 6px 10px; border: 1px solid rgba(90, 60, 10, .5); border-radius: 4px; }
+.bank-card__chip::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgba(90, 60, 10, .5); }
+.bank-card__num {
+  position: absolute; left: 14px; right: 14px; top: 56%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 6px; border: 0; border-radius: 8px; background: none;
+  color: #F1EEE6; cursor: pointer;
+  font: 600 clamp(19px, 6.4vw, 24px)/1 var(--mono); letter-spacing: .08em; font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .35), 0 -1px 0 rgba(0, 0, 0, .9), 0 3px 4px rgba(0, 0, 0, .6); /* timbul */
+}
+.bank-card__num .icon { width: 18px; height: 18px; flex: none; stroke: rgba(237, 234, 226, .8); }
+.bank-card__num:focus-visible { outline: 2px solid #F1EEE6; outline-offset: 2px; }
+.bank-card__label {
+  position: absolute; left: 20px; bottom: 36px; margin: 0;
+  font-size: 8.5px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: rgba(237, 234, 226, .55);
+}
+.bank-card__holder {
+  position: absolute; left: 20px; right: 70px; bottom: 15px; margin: 0;
+  font: 600 13.5px/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: #EDEAE2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+.bank-card__mono {
+  position: absolute; right: 16px; bottom: 8px;
+  font-family: var(--names); font-weight: var(--names-weight); font-size: 24px; line-height: 1;
+  color: rgba(237, 234, 226, .78); letter-spacing: .02em;
+}
+.gift--card .copy-hint { margin-top: 14px; }
+@keyframes card-float {
+  0%, 100% { transform: rotateX(7deg) rotateY(-9deg) translateY(0); }
+  50% { transform: rotateX(3deg) rotateY(7deg) translateY(-5px); }
+}
+@keyframes card-shine { 0%, 55% { translate: -60% 0; } 85%, 100% { translate: 60% 0; } }
+@keyframes card-shine-now { from { translate: -60% 0; } to { translate: 60% 0; } }
+@keyframes card-pop { 40% { scale: 1.04; } }
+
 /* ---------- Penutup ---------- */
 .closing { padding-bottom: 64px; }
 .closing__dear { margin: 0 0 10px; font-weight: 700; font-style: italic; }
@@ -1048,7 +1137,7 @@ body.is-opened .read-btn { opacity: 1; transform: none; pointer-events: auto; }
 .t4 .chapter.is-play .chapter__text .w { transform: none; }
 
 /* ---------- Foto terangkat & miring mengikuti mouse / gerakan HP / scroll ---------- */
-.t4 :where(.gallery__btn .polaroid, .instax, .strip, .box) {
+.t4 :where(.gallery__btn .polaroid, .instax, .strip, .box, .bank-card) {
   transform: perspective(700px)
     rotateX(calc(var(--rx, 0deg) + var(--gx, 0deg) + var(--sv, 0deg)))
     rotateY(calc(var(--ry, 0deg) + var(--gy, 0deg)));
@@ -1126,5 +1215,5 @@ body.is-opened .read-btn { opacity: 1; transform: none; pointer-events: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .t4 .cover__inner, .t4 :where(.gallery__btn .polaroid, .instax, .strip, .box) { transform: none; }
+  .t4 .cover__inner, .t4 :where(.gallery__btn .polaroid, .instax, .strip, .box, .bank-card) { transform: none; }
 }

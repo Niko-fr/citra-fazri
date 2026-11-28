@@ -1124,19 +1124,36 @@
     else $('#giftText').remove();
     const list = $('#giftList');
 
-    accounts.forEach(a => {
+    /* Tiap rekening = kartu hitam premium 3D (desain sendiri, bukan desain kartu bank).
+       Nomor dikelompokkan per 4 angka; ketuk di mana saja pada kartu untuk menyalin. */
+    const grouped = d => d.replace(/(\d{4})(?=\d)/g, '$1 ');
+    accounts.forEach((a, i) => {
       const digits = String(a.number).replace(/[\s-]/g, '');
-      list.append(h('div', { class: 'gift' },
-        h('p', { class: 'gift__bank' }, a.bank),
+      const card = h('div', { class: 'bank-card' + (/gopay/i.test(a.bank) ? ' bank-card--gopay' : ''), style: '--i:' + i });
+      const copy = () => {
+        U.copyWithToast(digits, a.bank + ' number copied');
+        card.classList.remove('is-copied');
+        void card.offsetWidth;
+        card.classList.add('is-copied');
+      };
+      const nfc = svg('svg', { class: 'bank-card__nfc', viewBox: '0 0 24 24', 'aria-hidden': 'true' },
+        svg('path', { d: 'M7.5 8.5c1.5 2.2 1.5 4.8 0 7M11 6.5c2.5 3.4 2.5 7.6 0 11M14.5 4.5c3.5 4.6 3.5 10.4 0 15' }));
+      card.append(h('div', { class: 'bank-card__face' },
+        h('p', { class: 'bank-card__bank' }, a.bank),
+        nfc,
+        h('span', { class: 'bank-card__chip', 'aria-hidden': 'true' }),
         h('button', {
           type: 'button',
-          class: 'copy-num',
+          class: 'bank-card__num copy-num',
           'aria-label': 'Copy ' + a.bank + ' number ' + a.number,
-          onclick: () => U.copyWithToast(digits, a.bank + ' number copied')
-        }, '[' + a.number + ']', icon('copy')),
-        h('p', { class: 'copy-hint' }, 'tap the number to copy'),
-        h('p', { class: 'gift__holder' }, 'Account name: ' + a.holder)
+          onclick: e => { e.stopPropagation(); copy(); }
+        }, grouped(digits), icon('copy')),
+        h('p', { class: 'bank-card__label' }, 'Account name'),
+        h('p', { class: 'bank-card__holder' }, a.holder),
+        h('span', { class: 'bank-card__mono', 'aria-hidden': 'true' }, U.initials)
       ));
+      card.addEventListener('click', copy);
+      list.append(h('div', { class: 'gift gift--card' }, card, h('p', { class: 'copy-hint' }, 'tap the card to copy the number')));
     });
 
     const ad = g.address;
@@ -1470,7 +1487,7 @@
         target.style.removeProperty('--ry');
       });
     };
-    $$('.gallery__btn .polaroid, .instax, .strip, .box').forEach(el => bind(el, el, 14));
+    $$('.gallery__btn .polaroid, .instax, .strip, .box, .bank-card').forEach(el => bind(el, el, 14));
     $$('.scene').forEach(el => bind(el, el, 12));
     const cover = $('#cover');
     const inner = $('.cover__inner');
@@ -1486,7 +1503,7 @@
     const vars = {};
     const visible = new Set();
     const put = (el, name, value) => (value == null ? el.style.removeProperty(name) : el.style.setProperty(name, value));
-    const targets = $$('.gallery__btn .polaroid, .instax, .strip, .box, .scene, .cover__inner');
+    const targets = $$('.gallery__btn .polaroid, .instax, .strip, .box, .bank-card, .scene, .cover__inner');
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver(entries => entries.forEach(en => {
         if (en.isIntersecting) { visible.add(en.target); Object.keys(vars).forEach(k => put(en.target, k, vars[k])); }
